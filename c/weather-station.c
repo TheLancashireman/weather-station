@@ -35,19 +35,13 @@ dv_id_t Init, Led;							/* Tasks */
 dv_id_t Uart1, Timer;						/* ISRs */
 											/* Mutexes */
 dv_id_t Ticker;								/* Counters */
-											/* Alarms */
+dv_id_t LedDriver;							/* Alarms */
 
 /* main_Init() - start the ball rolling
 */
 void main_Init(void)
 {
 	dv_printf("main_Init() reached\n");
-}
-
-/* main_Led() - task body function for the Led task
-*/
-void main_Led(void)
-{
 }
 
 /* main_Uart1() - body of ISR to handle uart1 rx interrupt
@@ -108,6 +102,7 @@ void callout_addcounters(dv_id_t mode)
 */
 void callout_addalarms(dv_id_t mode)
 {
+	LedDriver = dv_addalarm("LedDriver", &af_LedDriver, 0);
 }
 
 /* callout_autostart() - start the objects that need to be running after dv_startos()

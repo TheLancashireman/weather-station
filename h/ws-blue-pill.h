@@ -61,15 +61,12 @@ static inline void hw_ClearTimer(void)
 	dv_tim2.sr &= ~DV_TIM_CC4IF;	/* Clear the match flag */
 }
 
-static inline void hw_SetLed(int i, dv_boolean_t state)
+static inline void hw_SetLed(dv_boolean_t state)
 {
-	if ( i == 3 )
-	{
-		if ( state )
-			dv_gpio_c.brr = 0x1 << LED_PIN;
-		else
-			dv_gpio_c.bsrr = 0x1 << LED_PIN;
-	}
+	if ( state )
+		dv_gpio_c.brr = 0x1 << LED_PIN;
+	else
+		dv_gpio_c.bsrr = 0x1 << LED_PIN;
 }
 
 static inline void hw_EnableUart1RxInterrupt(void)

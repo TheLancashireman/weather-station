@@ -1,4 +1,4 @@
-/* weather-station.h - weather station (base station)
+/* main-Led.c - weather station LED blinker
  *
  * Copyright David Haworth
  *
@@ -17,28 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef WEATHER_STATION_H
-#define WEATHER_STATION_H	1
-
+#define DV_ASM	0
+#include <dv-config.h>
 #include <davroska.h>
+#include <ws-blue-pill.h>
 #include <weather-station.h>
 
-/* Object identifiers
-*/
-extern dv_id_t Init, Led;		/* Tasks */
-extern dv_id_t Uart1, Timer;	/* ISRs */
-extern dv_id_t Ticker;			/* Counters */
-extern dv_id_t LedDriver;		/* Alarms */
+static dv_boolean_t ledstate;
 
-/* Task and ISR main functions
+/* main_Led() - task body function for the Led task
 */
-extern void main_Init(void);
-extern void main_Led(void);
-extern void main_Uart1(void);
-extern void main_Timer(void);
+void main_Led(void)
+{
+	ledstate = !ledstate;
+	hw_SetLed(ledstate);
+	dv_setalarm_rel(Ticker, LedDriver, ledstate ? 20 : 1980);
+}
 
-/* Callouts
+/* af_LedDriver() - alarm function to activate the Led task
 */
-extern dv_u64_t af_LedDriver(dv_id_t unused_a, dv_param_t unused_d);
-
-#endif
+dv_u64_t af_LedDriver(dv_id_t unused_a, dv_param_t unused_d)
+{
+    dv_activatetask(Led);
+    return 0;				/* Single-shot */
+}
