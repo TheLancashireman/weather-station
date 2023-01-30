@@ -134,6 +134,7 @@ void dv_reset(void)
 	dv_nvic_init();
 
 	/* Initialise uart1 and connect it to the stdio functions
+	 * Done here so that printf() is available during startup.
 	*/
 	(void)dv_stm32_uart_init(&dv_uart1, 115200, "8N1");
 	dv_consoledriver.putc = uart1_putc;
@@ -155,13 +156,10 @@ void dv_reset(void)
 		dv_gpio_c.bsrr = 0x1 << LED_PIN;
 	} while (0);
 
-	/* Print the contents of the MPU_TYPE register
-	*/
-	dv_printf("MPU_TYPE = 0x%08x\n", *(unsigned *)0xE000ED90);
-
 	/* It would be possible to pass main() as the function pointer here,
 	 * but for the time being we'll use an intermediate function so that we can find out
-	 * what's going on.
+	 * what's going on if needed. Also, the trampoline ensures that the parameters to
+	 * main() are at least defined.
 	*/
 	dv_switchToPsp(&dv_pstacktop, &dv_stacktop, (dv_get_control() | DV_SPSEL), &dv_reset2);
 }
