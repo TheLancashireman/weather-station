@@ -27,6 +27,14 @@ The remote sensors are in separate repositories.
 
 The base station runs under my Davroska operating system.
 
+## Design (short version)
+
+* On-board LED is used as an alive indicator. Blinks for 20 ms every 2s.
+* Uart1 is the console - used for communicating with PC.
+* Uart2 is used for receiving messages from the serial remote sensors.
+
+## CAVEAT: This project is under development. If you're looking for a ready-to-run project please look elsewhere.
+
 ## License
 
 GPL v3 or later.  See the LICENSE file
