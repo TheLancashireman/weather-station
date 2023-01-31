@@ -31,12 +31,12 @@ void main_Led(void)
 {
 	ledstate = !ledstate;
 	hw_SetLed(ledstate);
-	dv_setalarm_rel(Ticker, LedDriver, ledstate ? 20 : 1980);
+	dv_setalarm_rel(Ticker, LedAlarm, ledstate ? 20 : 4980);
 }
 
-/* af_LedDriver() - alarm function to activate the Led task
+/* af_LedAlarm() - alarm function to activate the Led task
 */
-dv_u64_t af_LedDriver(dv_id_t unused_a, dv_param_t unused_d)
+dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d)
 {
     dv_activatetask(Led);
     return 0;				/* Single-shot */

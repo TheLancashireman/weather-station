@@ -28,7 +28,7 @@
 extern dv_id_t Init, Led;		/* Tasks */
 extern dv_id_t Uart1, Timer;	/* ISRs */
 extern dv_id_t Ticker;			/* Counters */
-extern dv_id_t LedDriver;		/* Alarms */
+extern dv_id_t LedAlarm;		/* Alarms */
 
 /* Task and ISR main functions
 */
@@ -39,6 +39,6 @@ extern void main_Timer(void);
 
 /* Callouts
 */
-extern dv_u64_t af_LedDriver(dv_id_t unused_a, dv_param_t unused_d);
+extern dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d);
 
 #endif

@@ -35,7 +35,7 @@ dv_id_t Init, Led;							/* Tasks */
 dv_id_t Uart1, Timer;						/* ISRs */
 											/* Mutexes */
 dv_id_t Ticker;								/* Counters */
-dv_id_t LedDriver;							/* Alarms */
+dv_id_t LedAlarm;							/* Alarms */
 
 /* main_Init() - start the ball rolling
 */
@@ -67,7 +67,7 @@ void callout_addtasks(dv_id_t mode)
 {
 	Init = dv_addtask("Init", &main_Init, 4, 1);
 	dv_printf("Init : %d\n", Init);
-	Led = dv_addextendedtask("Led", &main_Led, 1, 2048);
+	Led = dv_addtask("Led", &main_Led, 4, 1);
 	dv_printf("Led : %d\n", Led);
 }
 
@@ -102,7 +102,7 @@ void callout_addcounters(dv_id_t mode)
 */
 void callout_addalarms(dv_id_t mode)
 {
-	LedDriver = dv_addalarm("LedDriver", &af_LedDriver, 0);
+	LedAlarm = dv_addalarm("LedAlarm", &af_LedAlarm, 0);
 }
 
 /* callout_autostart() - start the objects that need to be running after dv_startos()
@@ -133,7 +133,6 @@ dv_statustype_t callout_reporterror(dv_sid_t sid, dv_statustype_t e, dv_qty_t np
 		dv_printf("    param[%d] = %d (0x%08x)\n", i, (dv_u32_t)param[i], (dv_u32_t)param[i]);
 	}
 
-	for (;;) {} /* Temporary */
 	return e;
 }
 

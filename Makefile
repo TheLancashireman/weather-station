@@ -27,6 +27,8 @@ PRJ_ROOT		?= $(shell pwd)
 DAVROS_ROOT		?= $(shell (cd $(PRJ_ROOT)/../../davros ; pwd))
 DAVROSKA_ROOT	= $(DAVROS_ROOT)/davroska
 
+PROJECT			?= weather-station
+
 # ARM gcc  ToDo: use clang?
 GNU_D		?=	/data1/gnu/gcc-arm-none-eabi-9-2019-q4-major
 
@@ -39,8 +41,8 @@ LDSCRIPT	?=	script/dv-blue-pill.ldscript
 
 ENTRY		?=	-e dv_reset
 
-IMAGE_FILE	?=	weather-station.bin
-SREC_FILE	?=	weather-station.srec
+IMAGE_FILE	?=	build/$(PROJECT).bin
+SREC_FILE	?=	build/$(PROJECT).srec
 
 BIN_D		= build
 OBJ_D		= build/obj
@@ -101,16 +103,20 @@ VPATH		+=	$(DAVROS_ROOT)/lib/c
 VPATH		+=	$(DAVROS_ROOT)/devices/c
 VPATH		+=	$(DAVROS_ROOT)/devices/s
 
-.PHONY:		default all help clean install srec
+.PHONY:		default all help clean install srec image
 
-default:	elf
+default:	image
 
 clean:
 	-rm -rf $(BIN_D)
 
-elf:		$(OBJ_D) $(BIN_D)/davroska.elf
+elf:		$(OBJ_D) $(BIN_D)/$(PROJECT).elf
 
-$(BIN_D)/davroska.elf:	$(BIN_D) $(LD_OBJS)
+image:		$(OBJ_D) $(BIN_D) $(IMAGE_FILE)
+
+srec:		$(OBJ_D) $(BIN_D) $(SREC_FILE)
+
+$(BIN_D)/$(PROJECT).elf:	$(BIN_D) $(LD_OBJS)
 	$(WS_LD) -o $@ $(LD_OBJS) $(LD_LIB) $(LD_OPT)
 
 $(OBJ_D)/%.o:  %.c
@@ -127,11 +133,10 @@ $(OBJ_D):
 
 install:		$(OBJ_D) $(BIN_D) $(IMAGE_FILE)
 
-$(IMAGE_FILE):	$(BIN_D)/davroska.elf
-	$(WS_OBJCOPY) $(BIN_D)/davroska.elf -O binary $(IMAGE_FILE)
+
+$(IMAGE_FILE):	$(BIN_D)/$(PROJECT).elf
+	$(WS_OBJCOPY) $(BIN_D)/$(PROJECT).elf -O binary $(IMAGE_FILE)
 	echo "flash write_image erase $(IMAGE_FILE) 0x08000000"
 
-srec:			$(OBJ_D) $(BIN_D) $(SREC_FILE)
-
-$(SREC_FILE):	$(BIN_D)/davroska.elf
-	$(WS_OBJCOPY) $(BIN_D)/davroska.elf -O srec --srec-forceS3 /dev/stdout | dos2unix | egrep -v '^S3..........00*..$$' > $(SREC_FILE)
+$(SREC_FILE):	$(BIN_D)/$(PROJECT).elf
+	$(WS_OBJCOPY) $(BIN_D)/$(PROJECT).elf -O srec --srec-forceS3 /dev/stdout | dos2unix | egrep -v '^S3..........00*..$$' > $(SREC_FILE)
