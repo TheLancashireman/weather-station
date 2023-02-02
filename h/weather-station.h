@@ -25,16 +25,17 @@
 
 /* Object identifiers
 */
-extern dv_id_t Init, Led;		/* Tasks */
-extern dv_id_t Uart1, Timer;	/* ISRs */
-extern dv_id_t Ticker;			/* Counters */
-extern dv_id_t LedAlarm;		/* Alarms */
+extern dv_id_t Init, Led;			/* Tasks */
+extern dv_id_t Itty1, Itty2, Timer;	/* ISRs */
+extern dv_id_t Ticker;				/* Counters */
+extern dv_id_t LedAlarm;			/* Alarms */
 
 /* Task and ISR main functions
 */
 extern void main_Init(void);
 extern void main_Led(void);
-extern void main_Uart1(void);
+extern void main_Itty1(void);
+extern void main_Itty2(void);
 extern void main_Timer(void);
 
 /* Callouts

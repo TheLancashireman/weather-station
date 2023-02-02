@@ -55,6 +55,8 @@
 		dv_enable_irq(hw_UsbInterruptId3);	\
 	} while (0)
 
+extern void uart1_polled_init(void);
+
 static inline void hw_ClearTimer(void)
 {
 	dv_tim2.ccr[3] += 1000;			/* No in-the-past check */

@@ -16,9 +16,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- *
 */
 #define DV_ASM	0
 #include <dv-config.h>
@@ -32,7 +29,7 @@
 /* Object identifiers
 */
 dv_id_t Init, Led;							/* Tasks */
-dv_id_t Uart1, Timer;						/* ISRs */
+dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 											/* Mutexes */
 dv_id_t Ticker;								/* Counters */
 dv_id_t LedAlarm;							/* Alarms */
@@ -42,12 +39,6 @@ dv_id_t LedAlarm;							/* Alarms */
 void main_Init(void)
 {
 	dv_printf("main_Init() reached\n");
-}
-
-/* main_Uart1() - body of ISR to handle uart1 rx interrupt
-*/
-void main_Uart1(void)
-{
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
@@ -66,16 +57,14 @@ void main_Timer(void)
 void callout_addtasks(dv_id_t mode)
 {
 	Init = dv_addtask("Init", &main_Init, 4, 1);
-	dv_printf("Init : %d\n", Init);
 	Led = dv_addtask("Led", &main_Led, 4, 1);
-	dv_printf("Led : %d\n", Led);
 }
 
 /* callout_addisrs() - configure the isrs
 */
 void callout_addisrs(dv_id_t mode)
 {
-	Uart1 = dv_addisr("Uart1", &main_Uart1, hw_Uart1InterruptId, 5);
+	Itty1 = dv_addisr("Itty1",  &main_Itty1,  hw_Uart1InterruptId, 5);
 	Timer = dv_addisr("Timer", &main_Timer, hw_TimerInterruptId, 6);
 }
 
@@ -111,11 +100,6 @@ void callout_autostart(dv_id_t mode)
 {
 	dv_activatetask(Init);
 	dv_activatetask(Led);
-
-	/* Enable interrupts from the UART1
-	*/
-	hw_EnableUart1RxInterrupt();
-	dv_enable_irq(hw_Uart1InterruptId);
 
 	hw_InitialiseMillisecondTicker();
 	dv_enable_irq(hw_TimerInterruptId);
