@@ -28,7 +28,7 @@
 
 /* Object identifiers
 */
-dv_id_t Init, Led;							/* Tasks */
+dv_id_t Init, Led, Gather;					/* Tasks */
 dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 											/* Mutexes */
 dv_id_t Ticker;								/* Counters */

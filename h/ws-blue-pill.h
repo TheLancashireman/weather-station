@@ -71,12 +71,6 @@ static inline void hw_SetLed(dv_boolean_t state)
 		dv_gpio_c.bsrr = 0x1 << LED_PIN;
 }
 
-static inline void hw_EnableUart1RxInterrupt(void)
-{
-	dv_uart1.cr[0] |= DV_UART_RXNEIE;
-	dv_enable_irq(dv_irq_usart1);
-}
-
 static inline void hw_InitialiseMillisecondTicker(void)
 {
 	/* Set the counter running with a 1 us tick

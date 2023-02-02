@@ -25,15 +25,22 @@
 
 /* Object identifiers
 */
-extern dv_id_t Init, Led;			/* Tasks */
-extern dv_id_t Itty1, Itty2, Timer;	/* ISRs */
-extern dv_id_t Ticker;				/* Counters */
-extern dv_id_t LedAlarm;			/* Alarms */
+extern dv_id_t Init, Led, Gather;		/* Tasks */
+extern dv_id_t Itty1, Itty2, Timer;		/* ISRs */
+extern dv_id_t Ticker;					/* Counters */
+extern dv_id_t LedAlarm;				/* Alarms */
+
+/* Events for the Gather task
+*/
+#define ev_tty2_overrun		0x00000001
+#define ev_tty2_rxline		0x00000002
 
 /* Task and ISR main functions
 */
 extern void main_Init(void);
 extern void main_Led(void);
+extern void main_Gather(void);
+
 extern void main_Itty1(void);
 extern void main_Itty2(void);
 extern void main_Timer(void);

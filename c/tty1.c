@@ -103,6 +103,8 @@ int tty1_getc(void)
 */
 void tty1_Init(void)
 {
+	/* Initialise the ringbuffers
+	*/
 	tty1_rx_rbm.head = 0;
 	tty1_rx_rbm.tail = 0;
 	tty1_rx_rbm.length = 256;
@@ -110,6 +112,18 @@ void tty1_Init(void)
 	tty1_tx_rbm.head = 0;
 	tty1_tx_rbm.tail = 0;
 	tty1_tx_rbm.length = 256;
+
+	/* Configure the console for interrupt-driven operation
+	*/
+	dv_consoledriver.putc = tty1_putc;
+	dv_consoledriver.getc = tty1_getc;
+	dv_consoledriver.istx = tty1_istx;
+	dv_consoledriver.isrx = tty1_isrx;
+
+	/* Enable the UART interrupts
+	*/
+	dv_uart1.cr[0] |= (DV_UART_RXNEIE | DV_UART_TXEIE);
+	dv_enable_irq(dv_irq_usart1);
 }
 
 /* main_Itty1() - body of ISR to handle uart1 interrupt
@@ -131,6 +145,8 @@ void main_Itty1(void)
 		int c = dv_rb_u8_get(&tty1_tx_rbm, tty1_tx_rb);
 		if ( c < 0 )
 		{
+			/* Do we need to disable the tx interrupt here?
+			*/
 			break;
 		}
 		else
