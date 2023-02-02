@@ -57,7 +57,9 @@ void main_Timer(void)
 void callout_addtasks(dv_id_t mode)
 {
 	Init = dv_addtask("Init", &main_Init, 4, 1);
-	Led = dv_addtask("Led", &main_Led, 4, 1);
+	Led  = dv_addtask("Led",  &main_Led,  1, 1);
+
+	Gather = dv_addextendedtask("Gather", &main_Gather, 2, 512);
 }
 
 /* callout_addisrs() - configure the isrs
