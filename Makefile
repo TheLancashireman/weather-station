@@ -71,6 +71,9 @@ LD_OPT		+=	-lc
 # The project code
 LD_OBJS		+= $(OBJ_D)/weather-station.o
 LD_OBJS		+= $(OBJ_D)/led.o
+LD_OBJS		+= $(OBJ_D)/gather.o
+LD_OBJS		+= $(OBJ_D)/record.o
+LD_OBJS		+= $(OBJ_D)/convert.o
 LD_OBJS		+= $(OBJ_D)/tty1.o
 LD_OBJS		+= $(OBJ_D)/tty2.o
 LD_OBJS		+= $(OBJ_D)/ws-blue-pill.o

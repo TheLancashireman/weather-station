@@ -21,7 +21,8 @@
 #define WEATHER_STATION_H	1
 
 #include <davroska.h>
-#include <weather-station.h>
+
+#define MAX_SENSOR_STRING		32
 
 /* Object identifiers
 */
@@ -48,5 +49,28 @@ extern void main_Timer(void);
 /* Callouts
 */
 extern dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d);
+
+/* Data conversion
+*/
+dv_u32_t asciihex_to_4bit(char c);
+dv_u32_t asciihex_to_binary(char *b, int n);
+
+/* tty2 functions
+*/
+dv_boolean_t tty2_isrx(void);
+dv_boolean_t tty2_istx(void);
+dv_boolean_t tty2_putc(int c);
+int tty2_getc(void);
+
+/* Processsing functions
+*/
+void process_temperature(dv_u8_t id, char *b);
+
+/* Recording/logging functions
+*/
+extern void record_sensor_start(dv_u8_t id);
+extern void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max);
+extern void record_sensor_error(dv_u8_t id, dv_u8_t errorcode);
+extern void record_invalid_sensor_data(char *b);
 
 #endif
