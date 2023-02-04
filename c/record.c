@@ -22,6 +22,26 @@
 #include <weather-station.h>
 #include <dv-stdio.h>
 
+typedef struct
+{	dv_u32_t i;
+	dv_u32_t f;
+	char sign;
+} temp_t;
+
+void temp_to_temp_t(dv_u16_t temp, temp_t *out)
+{
+	dv_u16_t t = temp;
+
+	out->sign = ' ';
+	if ( t > 0x800 )
+	{
+		out->sign = '-';
+		t = 0x1000 - t;
+	}
+	out->i = t >> 4;
+	out->f = ((t & 0xf) * 10000)/16;
+}
+
 /* record_sensor_start() - record a sensor's start time
  *
  * A sensor start record is of the form "Sxx".
@@ -38,7 +58,14 @@ void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max
 {
 	/* Temporary
 	*/
-	dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
+	temp_t tcur, tmax, tmin;
+	temp_to_temp_t(current, &tcur);
+	temp_to_temp_t(min, &tmin);
+	temp_to_temp_t(max, &tmax);
+
+	//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
+	dv_printf("Sensor %02x: temperature %c%d.%04d min %c%d.%04d max %c%d.%04d\n", id,
+				tcur.sign, tcur.i, tcur.f, tmin.sign, tmin.i, tmin.f, tmax.sign, tmax.i, tmax.f);
 }
 
 void record_sensor_error(dv_u8_t id, dv_u8_t errorcode)
