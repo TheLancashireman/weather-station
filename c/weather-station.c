@@ -45,7 +45,8 @@ void main_Init(void)
 */
 void main_Timer(void)
 {
-	hw_ClearTimer();
+	dv_tim2.ccr[3] += 1000;			/* No in-the-past check */
+	dv_tim2.sr &= ~DV_TIM_CC4IF;	/* Clear the match flag */
 
 	dv_statustype_t ee = dv_advancecounter(Ticker, 1);
 	if ( ee != dv_e_ok )
@@ -66,8 +67,9 @@ void callout_addtasks(dv_id_t mode)
 */
 void callout_addisrs(dv_id_t mode)
 {
-	Itty1 = dv_addisr("Itty1",  &main_Itty1,  hw_Uart1InterruptId, 5);
-	Timer = dv_addisr("Timer", &main_Timer, hw_TimerInterruptId, 6);
+	Itty1 = dv_addisr("Itty1",  &main_Itty1,  dv_irq_usart1, 5);
+	Itty2 = dv_addisr("Itty2",  &main_Itty2,  dv_irq_usart2, 5);
+	Timer = dv_addisr("Timer",  &main_Timer,  dv_irq_tim2,   6);
 }
 
 /* callout_addgroups() - configure the executable groups
@@ -102,9 +104,21 @@ void callout_autostart(dv_id_t mode)
 {
 	dv_activatetask(Init);
 	dv_activatetask(Led);
+	dv_activatetask(Gather);
 
-	hw_InitialiseMillisecondTicker();
-	dv_enable_irq(hw_TimerInterruptId);
+	/* Set the 1 ms tick interrupt running
+	*/
+	init_millisecond_ticker();
+	dv_enable_irq(dv_irq_tim2);
+
+	/* Initialise uart2 for receiving sensor data
+	*/
+	tty2_init();
+
+	/* TEMPORARY for testing - enable uart1 rx interrupts
+	*/
+	dv_uart1.cr[0] |= DV_UART_RXNEIE;
+	dv_enable_irq(dv_irq_usart1);
 }
 
 /* callout_reporterror() - called if an error is detected
@@ -139,13 +153,9 @@ void callout_idle(void)
 
 /* callout_panic() - called from dv_panic
 */
-#ifndef panic_info
-#define panic_info()	do { } while (0)
-#endif
 void callout_panic(dv_panic_t p, dv_sid_t sid, char *fault)
 {
 	dv_printf("Panic %d in %d : %s\n", p, sid, fault);
-	panic_info();
 }
 
 /* main() - well, it's main, innit?

@@ -36,7 +36,7 @@ static dv_u8_t tty1_tx_rb[256];
 
 /* Mapping functions for polled operation
 */
-int uart1_putc(int c)
+dv_boolean_t uart1_putc(int c)
 {
 	dv_stm32_uart_putc(&dv_uart1, c);
 	return 1;
@@ -47,25 +47,14 @@ int uart1_getc(void)
 	return dv_stm32_uart_getc(&dv_uart1);
 }
 
-int uart1_isrx(void)
+dv_boolean_t uart1_isrx(void)
 {
 	return dv_stm32_uart_isrx(&dv_uart1);
 }
 
-int uart1_istx(void)
+dv_boolean_t uart1_istx(void)
 {
 	return dv_stm32_uart_istx(&dv_uart1);
-}
-
-/* uart1_polled_init() - initialise uart1/console for polled operation
-*/
-void uart1_polled_init(void)
-{
-	(void)dv_stm32_uart_init(&dv_uart1, 115200, "8N1");
-	dv_consoledriver.putc = uart1_putc;
-	dv_consoledriver.getc = uart1_getc;
-	dv_consoledriver.istx = uart1_istx;
-	dv_consoledriver.isrx = uart1_isrx;
 }
 
 /* Mapping functions for console in ringbuffer mode
@@ -120,9 +109,12 @@ void tty1_Init(void)
 	dv_consoledriver.istx = tty1_istx;
 	dv_consoledriver.isrx = tty1_isrx;
 
-	/* Enable the UART interrupts
+	/* Enable the uart tx and rx interrupts
 	*/
 	dv_uart1.cr[0] |= (DV_UART_RXNEIE | DV_UART_TXEIE);
+
+	/* Enable the uart IRQ at the NVIC
+	*/
 	dv_enable_irq(dv_irq_usart1);
 }
 
@@ -130,6 +122,14 @@ void tty1_Init(void)
 */
 void main_Itty1(void)
 {
+#if 1	/* Test code */
+    while ( dv_consoledriver.isrx() )
+    {
+        int c = dv_consoledriver.getc();
+
+        dv_printf("uart rx : 0x%02x\n", c);
+    }
+#else
 	while ( dv_stm32_uart_isrx(&dv_uart1) )
 	{
 		dv_u8_t c = (dv_u8_t)dv_stm32_uart_getc(&dv_uart1);
@@ -139,7 +139,9 @@ void main_Itty1(void)
 			*/
 		}
 	}
+#endif
 
+#if 0	/* Tx interrupt not in use yet */
 	while ( dv_stm32_uart_istx(&dv_uart1) )
 	{
 		int c = dv_rb_u8_get(&tty1_tx_rbm, tty1_tx_rb);
@@ -154,4 +156,5 @@ void main_Itty1(void)
 			dv_stm32_uart_putc(&dv_uart1, c);
 		}
 	}
+#endif
 }

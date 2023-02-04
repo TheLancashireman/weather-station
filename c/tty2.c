@@ -59,13 +59,8 @@ int tty2_getc(void)
 }
 
 /* tty2_init() - initialise uart2 for buffer handling
- *
- * uart1 has already been initialised for the console, but the console tx is operating in polled mode
- * and the console rx isn't much used.
- *
- * This function initializes the buffer handling for both tx and rx and switches the console pointers
 */
-void tty2_Init(void)
+void tty2_init(void)
 {
 #if 0
 	tty2driver.putc = tty2_putc;
@@ -74,6 +69,8 @@ void tty2_Init(void)
 	tty2driver.isrx = tty2_isrx;
 #endif
 
+	/* Initialise the ring buffers
+	*/
 	tty2_rx_rbm.head = 0;
 	tty2_rx_rbm.tail = 0;
 	tty2_rx_rbm.length = 256;
@@ -82,7 +79,14 @@ void tty2_Init(void)
 	tty2_tx_rbm.tail = 0;
 	tty2_tx_rbm.length = 256;
 
-	(void)dv_stm32_uart_init(&dv_uart2, 9600, "8N1");
+	/* Enable the uart rx interrupt
+	*/
+	// dv_uart2.cr[0] |= (DV_UART_RXNEIE | DV_UART_TXEIE);
+	dv_uart2.cr[0] |= DV_UART_RXNEIE;
+
+	/* Enable uart2 IRQ at the NVIC
+	*/
+	dv_enable_irq(dv_irq_usart2);
 }
 
 /* main_Itty2() - body of ISR to handle uart2 interrupt
@@ -91,7 +95,7 @@ void main_Itty2(void)
 {
 	while ( dv_stm32_uart_isrx(&dv_uart2) )
 	{
-		dv_u8_t c = (dv_u8_t)dv_stm32_uart_getc(&dv_uart2);
+		char c = (char)dv_stm32_uart_getc(&dv_uart2);
 		if ( !dv_rb_u8_put(&tty2_rx_rbm, tty2_rx_rb, c) )
 		{
 			/* Character discarded. Count the overruns and inform the data gathering task
@@ -107,6 +111,7 @@ void main_Itty2(void)
 		}
 	}
 
+#if 0	/* Tx interrupt not in use yet */
 	while ( dv_stm32_uart_istx(&dv_uart2) )
 	{
 		int c = dv_rb_u8_get(&tty2_tx_rbm, tty2_tx_rb);
@@ -119,4 +124,5 @@ void main_Itty2(void)
 			dv_stm32_uart_putc(&dv_uart2, c);
 		}
 	}
+#endif
 }

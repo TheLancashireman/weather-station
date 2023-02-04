@@ -52,19 +52,34 @@ extern dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d);
 
 /* Data conversion
 */
-dv_u32_t asciihex_to_4bit(char c);
-dv_u32_t asciihex_to_binary(char *b, int n);
+extern dv_u32_t asciihex_to_4bit(char c);
+extern dv_u32_t asciihex_to_binary(char *b, int n);
+
+/* tty1 functions
+*/
+extern void tty1_init(void);
+extern dv_boolean_t tty1_isrx(void);
+extern dv_boolean_t tty1_istx(void);
+extern dv_boolean_t tty1_putc(int c);
+extern int tty1_getc(void);
+/* tty1 polled
+*/
+extern dv_boolean_t uart1_isrx(void);
+extern dv_boolean_t uart1_istx(void);
+extern dv_boolean_t uart1_putc(int c);
+extern int uart1_getc(void);
 
 /* tty2 functions
 */
-dv_boolean_t tty2_isrx(void);
-dv_boolean_t tty2_istx(void);
-dv_boolean_t tty2_putc(int c);
-int tty2_getc(void);
+extern void tty2_init(void);
+extern dv_boolean_t tty2_isrx(void);
+extern dv_boolean_t tty2_istx(void);
+extern dv_boolean_t tty2_putc(int c);
+extern int tty2_getc(void);
 
 /* Processsing functions
 */
-void process_temperature(dv_u8_t id, char *b);
+extern void process_temperature(dv_u8_t id, char *b);
 
 /* Recording/logging functions
 */
