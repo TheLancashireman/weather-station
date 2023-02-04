@@ -48,9 +48,9 @@ void record_sensor_error(dv_u8_t id, dv_u8_t errorcode)
 	dv_printf("Sensor %02x: error %u\n", id, errorcode);
 }
 
-void record_invalid_sensor_data(char *b)
+void record_invalid_sensor_data(char *b, int e)
 {
 	/* Temporary
 	*/
-	dv_printf("Invalid sensor data: \"%s\"\n", b);
+	dv_printf("Invalid sensor data: \"%s\". Error %d\n", b, e);
 }

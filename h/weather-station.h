@@ -86,6 +86,6 @@ extern void process_temperature(dv_u8_t id, char *b);
 extern void record_sensor_start(dv_u8_t id);
 extern void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max);
 extern void record_sensor_error(dv_u8_t id, dv_u8_t errorcode);
-extern void record_invalid_sensor_data(char *b);
+extern void record_invalid_sensor_data(char *b, int e);
 
 #endif

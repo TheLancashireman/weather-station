@@ -131,7 +131,7 @@ static void process_sensor_data(char *b)
 	}
 	else
 	{
-		record_invalid_sensor_data(b);
+		record_invalid_sensor_data(b, 1);
 	}
 }
 
@@ -151,13 +151,13 @@ void process_temperature(dv_u8_t id, char *b)
 
 	if ( b[3] == ' ' )
 	{
-		v = asciihex_to_binary(&b[6], 3);
+		v = asciihex_to_binary(&b[4], 3);
 		if ( v == 0xffffffff )
 		{
 			if ( (b[4] == '*') && (b[5] == '*') )
 				record_sensor_error(id, asciihex_to_4bit(b[6]));
 			else
-				record_invalid_sensor_data(b);
+				record_invalid_sensor_data(b, 2);
 			return;
 		}
 
@@ -165,14 +165,14 @@ void process_temperature(dv_u8_t id, char *b)
 
 		if ( b[7] != ' ' )
 		{
-			record_invalid_sensor_data(b);
+			record_invalid_sensor_data(b, 3);
 			return;
 		}
 
 		v = asciihex_to_binary(&b[8], 3);
 		if ( v == 0xffffffff )
 		{
-			record_invalid_sensor_data(b);
+			record_invalid_sensor_data(b, 4);
 			return;
 		}
 
@@ -180,14 +180,14 @@ void process_temperature(dv_u8_t id, char *b)
 
 		if ( b[11] != ' ' )
 		{
-			record_invalid_sensor_data(b);
+			record_invalid_sensor_data(b, 5);
 			return;
 		}
 
 		v = asciihex_to_binary(&b[12], 3);
 		if ( v == 0xffffffff )
 		{
-			record_invalid_sensor_data(b);
+			record_invalid_sensor_data(b, 6);
 			return;
 		}
 
