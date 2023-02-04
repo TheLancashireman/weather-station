@@ -56,7 +56,7 @@ CC_OPT		+= -I $(DAVROS_ROOT)/devices/h
 CC_OPT		+= -I $(DAVROS_ROOT)/lib/h
 CC_OPT		+= -Wall
 CC_OPT		+= -fno-common
-CC_OPT		+= -ffunction-sections -fdata-sections
+#CC_OPT		+= -ffunction-sections -fdata-sections
 CC_OPT		+= -g
 
 CC_OPT		+= -O2
@@ -68,7 +68,7 @@ LD_OPT		+= $(ENTRY)
 LD_OPT		+= -T $(LDSCRIPT)
 LD_OPT		+=	-L $(WS_LDLIB_D)
 LD_OPT		+=	-lc
-LD_OPT		+=	--gc-sections
+#LD_OPT		+=	--gc-sections
 
 # The project code
 LD_OBJS		+= $(OBJ_D)/weather-station.o
