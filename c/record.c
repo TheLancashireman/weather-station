@@ -64,7 +64,7 @@ void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max
 	temp_to_temp_t(max, &tmax);
 
 	//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
-	dv_printf("Sensor %02x: temperature %c%d.%04d min %c%d.%04d max %c%d.%04d\n", id,
+	dv_printf("Sensor %02x: temperature %c%d.%04d ( %c%d.%04d .. %c%d.%04d )\n", id,
 				tcur.sign, tcur.i, tcur.f, tmin.sign, tmin.i, tmin.f, tmax.sign, tmax.i, tmax.f);
 }
 
