@@ -20,6 +20,7 @@
 #define DV_ASM	0
 #include <dv-config.h>
 #include <weather-station.h>
+#include <convert.h>
 #include <dv-ctype.h>
 
 /* asciihex_to_u8() - convert an ascii-hex character to binary
@@ -55,4 +56,21 @@ dv_u32_t asciihex_to_binary(char *b, int n)
 			return 0xffffffff;
 	}
 	return r;
+}
+
+/* fixedpoint_to_printable() - convert a 12-bit fixed point value to a printable form
+*/
+void fixedpoint_to_printable(dv_u16_t fpval, fixedpoint_printable_t *out)
+{
+	dv_u16_t t = fpval;
+
+	if ( t < 0x800 )
+		out->sign = '+';
+	else
+	{
+		out->sign = '-';
+		t = 0x1000 - t;
+	}
+	out->i = t >> 4;
+	out->f = ((t & 0xf) * 10000)/16;
 }

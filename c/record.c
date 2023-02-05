@@ -20,27 +20,8 @@
 #define DV_ASM	0
 #include <dv-config.h>
 #include <weather-station.h>
+#include <convert.h>
 #include <dv-stdio.h>
-
-typedef struct
-{	dv_u32_t i;
-	dv_u32_t f;
-	char sign;
-} temp_t;
-
-void temp_to_temp_t(dv_u16_t temp, temp_t *out)
-{
-	dv_u16_t t = temp;
-
-	out->sign = ' ';
-	if ( t > 0x800 )
-	{
-		out->sign = '-';
-		t = 0x1000 - t;
-	}
-	out->i = t >> 4;
-	out->f = ((t & 0xf) * 10000)/16;
-}
 
 /* record_sensor_start() - record a sensor's start time
  *
@@ -58,10 +39,10 @@ void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max
 {
 	/* Temporary
 	*/
-	temp_t tcur, tmax, tmin;
-	temp_to_temp_t(current, &tcur);
-	temp_to_temp_t(min, &tmin);
-	temp_to_temp_t(max, &tmax);
+	fixedpoint_printable_t tcur, tmax, tmin;
+	fixedpoint_to_printable(current, &tcur);
+	fixedpoint_to_printable(min, &tmin);
+	fixedpoint_to_printable(max, &tmax);
 
 	//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
 	dv_printf("Sensor %02x: temperature %c%d.%04d ( %c%d.%04d .. %c%d.%04d )\n", id,
