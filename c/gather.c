@@ -20,6 +20,8 @@
 #define DV_ASM	0
 #include <dv-config.h>
 #include <weather-station.h>
+#include <sensor.h>
+#include <convert.h>
 #include <dv-ctype.h>
 #include <dv-stdio.h>
 

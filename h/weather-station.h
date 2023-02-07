@@ -22,8 +22,6 @@
 
 #include <davroska.h>
 
-#define MAX_SENSOR_STRING		32
-
 /* Object identifiers
 */
 extern dv_id_t Init, Led, Gather;		/* Tasks */
@@ -50,11 +48,6 @@ extern void main_Timer(void);
 */
 extern dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d);
 
-/* Data conversion
-*/
-extern dv_u32_t asciihex_to_4bit(char c);
-extern dv_u32_t asciihex_to_binary(char *b, int n);
-
 /* tty1 functions
 */
 extern void tty1_init(void);
@@ -76,16 +69,5 @@ extern dv_boolean_t tty2_isrx(void);
 extern dv_boolean_t tty2_istx(void);
 extern dv_boolean_t tty2_putc(int c);
 extern int tty2_getc(void);
-
-/* Processsing functions
-*/
-extern void process_temperature(dv_u8_t id, char *b);
-
-/* Recording/logging functions
-*/
-extern void record_sensor_start(dv_u8_t id);
-extern void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max);
-extern void record_sensor_error(dv_u8_t id, dv_u8_t errorcode);
-extern void record_invalid_sensor_data(char *b, int e);
 
 #endif
