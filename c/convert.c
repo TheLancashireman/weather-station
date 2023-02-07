@@ -33,7 +33,7 @@ dv_u32_t asciihex_to_4bit(char c)
 	b -= 0x30;
 	if ( b > 9 )
 	{
-		b -= 0x11;
+		b -= 0x07;			/* +10 -0x11 */
 		if ( b > 0x0f )
 			b -= 0x20;
 	}
@@ -69,7 +69,7 @@ void fixedpoint_to_printable(dv_u16_t fpval, fixedpoint_printable_t *out)
 	else
 	{
 		out->sign = '-';
-		t = 0x1000 - t;
+		t = (~t + 1) & 0x7ff;
 	}
 	out->i = t >> 4;
 	out->f = ((t & 0xf) * 10000)/16;
