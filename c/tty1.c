@@ -30,6 +30,8 @@ static dv_u8_t tty1_rx_rb[256];
 static dv_rbm_t tty1_tx_rbm;
 static dv_u8_t tty1_tx_rb[256];
 
+static unsigned tty1_overruns;
+
 /* uart1 is the console (tty1). During startup, polling mode is used.
  * When the ISRs have been configured, it is switched to ringbuffer mode
 */
@@ -66,10 +68,13 @@ dv_boolean_t tty1_istx(void)
 
 dv_boolean_t tty1_putc(int c)
 {
-	while ( !dv_rb_u8_put(&tty1_tx_rbm, tty1_rx_rb, (dv_u8_t)c) )
+	while ( !dv_rb_u8_put(&tty1_tx_rbm, tty1_tx_rb, (dv_u8_t)c) )
 	{
-		/* Wait */
+		/* Wait. Enable the tx interrupt in case it got disabled.
+		*/
+		dv_uart1.cr[0] |= DV_UART_TXEIE;
 	}
+	dv_uart1.cr[0] |= DV_UART_TXEIE;
 	return 1;
 }
 
@@ -90,7 +95,7 @@ int tty1_getc(void)
  *
  * This function initializes the buffer handling for both tx and rx and switches the console pointers
 */
-void tty1_Init(void)
+void tty1_init(void)
 {
 	/* Initialise the ringbuffers
 	*/
@@ -122,33 +127,35 @@ void tty1_Init(void)
 */
 void main_Itty1(void)
 {
-#if 1	/* Test code */
-    while ( dv_consoledriver.isrx() )
-    {
-        int c = dv_consoledriver.getc();
-
-        dv_printf("uart rx : 0x%02x\n", c);
-    }
-#else
 	while ( dv_stm32_uart_isrx(&dv_uart1) )
 	{
 		dv_u8_t c = (dv_u8_t)dv_stm32_uart_getc(&dv_uart1);
 		if ( !dv_rb_u8_put(&tty1_rx_rbm, tty1_rx_rb, c) )
 		{
-			/* Character discarded. Report overrun error?
+			/* Character discarded. Count the overruns and inform the data gathering task
 			*/
-		}
-	}
+			if ( tty1_overruns < 0xffffffff )
+				tty1_overruns++;
+#if 0
+			(void)dv_setevent(XXXXX, ev_tty1_overrun);
 #endif
+		}
+#if 0
+		if ( c == '\n' )
+		{
+			/* Full line received. Inform the command interpreter
+			*/
+			(void)dv_setevent(XXXXX,ev_tty1_rxline);
+		}
+#endif
+	}
 
-#if 0	/* Tx interrupt not in use yet */
 	while ( dv_stm32_uart_istx(&dv_uart1) )
 	{
 		int c = dv_rb_u8_get(&tty1_tx_rbm, tty1_tx_rb);
 		if ( c < 0 )
 		{
-			/* Do we need to disable the tx interrupt here?
-			*/
+			dv_uart1.cr[0] &= ~DV_UART_TXEIE;
 			break;
 		}
 		else
@@ -156,5 +163,4 @@ void main_Itty1(void)
 			dv_stm32_uart_putc(&dv_uart1, c);
 		}
 	}
-#endif
 }
