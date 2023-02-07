@@ -41,10 +41,13 @@ dv_boolean_t tty2_istx(void)
 
 dv_boolean_t tty2_putc(int c)
 {
-	while ( !dv_rb_u8_put(&tty2_tx_rbm, tty2_rx_rb, (dv_u8_t)c) )
+	while ( !dv_rb_u8_put(&tty2_tx_rbm, tty2_tx_rb, (dv_u8_t)c) )
 	{
-		/* Wait */
+		/* Wait. Enable the tx interrupt in case it got disabled.
+		*/
+		dv_uart2.cr[0] |= DV_UART_TXEIE;
 	}
+	dv_uart2.cr[0] |= DV_UART_TXEIE;
 	return 1;
 }
 
@@ -79,9 +82,8 @@ void tty2_init(void)
 	tty2_tx_rbm.tail = 0;
 	tty2_tx_rbm.length = 256;
 
-	/* Enable the uart rx interrupt
+	/* Enable the uart rx interrupt. The tx interrupt gets enabled when needed.
 	*/
-	// dv_uart2.cr[0] |= (DV_UART_RXNEIE | DV_UART_TXEIE);
 	dv_uart2.cr[0] |= DV_UART_RXNEIE;
 
 	/* Enable uart2 IRQ at the NVIC
@@ -111,12 +113,12 @@ void main_Itty2(void)
 		}
 	}
 
-#if 0	/* Tx interrupt not in use yet */
 	while ( dv_stm32_uart_istx(&dv_uart2) )
 	{
 		int c = dv_rb_u8_get(&tty2_tx_rbm, tty2_tx_rb);
 		if ( c < 0 )
 		{
+			dv_uart2.cr[0] &= ~DV_UART_TXEIE;
 			break;
 		}
 		else
@@ -124,5 +126,4 @@ void main_Itty2(void)
 			dv_stm32_uart_putc(&dv_uart2, c);
 		}
 	}
-#endif
 }
