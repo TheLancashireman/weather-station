@@ -38,7 +38,14 @@ dv_id_t LedAlarm;							/* Alarms */
 */
 void main_Init(void)
 {
+	/* This is the last message with the console in polled mode.
+	*/
 	dv_printf("main_Init() reached\n");
+
+	/* Switch uart1 to tty (interrupt driven) mode. Cannot do this earlier because
+	 * interrupts are disabled and there are no ISRs.
+	*/
+	tty1_init();
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
