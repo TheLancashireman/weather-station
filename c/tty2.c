@@ -102,7 +102,8 @@ void main_Itty2(void)
 		{
 			/* Character discarded. Count the overruns and inform the data gathering task
 			*/
-			tty2_overruns++;
+			if ( tty2_overruns < 0xffffffff )
+				tty2_overruns++;
 			(void)dv_setevent(Gather, ev_tty2_overrun);
 		}
 		if ( c == '\n' )
