@@ -24,21 +24,28 @@
 
 /* Object identifiers
 */
-extern dv_id_t Init, Led, Gather;		/* Tasks */
-extern dv_id_t Itty1, Itty2, Timer;		/* ISRs */
-extern dv_id_t Ticker;					/* Counters */
-extern dv_id_t LedAlarm;				/* Alarms */
+extern dv_id_t Init, Led, Gather, Command;		/* Tasks */
+extern dv_id_t Itty1, Itty2, Timer;				/* ISRs */
+extern dv_id_t Ticker;							/* Counters */
+extern dv_id_t LedAlarm;						/* Alarms */
+extern dv_id_t SpiMutex;						/* Mutexes */
 
 /* Events for the Gather task
 */
 #define ev_tty2_overrun		0x00000001
 #define ev_tty2_rxline		0x00000002
 
+/* Events for the Command task
+*/
+#define ev_tty1_overrun		0x00000001
+#define ev_tty1_rxline		0x00000002
+
 /* Task and ISR main functions
 */
 extern void main_Init(void);
 extern void main_Led(void);
 extern void main_Gather(void);
+extern void main_Command(void);
 
 extern void main_Itty1(void);
 extern void main_Itty2(void);
@@ -69,5 +76,9 @@ extern dv_boolean_t tty2_isrx(void);
 extern dv_boolean_t tty2_istx(void);
 extern dv_boolean_t tty2_putc(int c);
 extern int tty2_getc(void);
+
+/* SPI configuration
+*/
+#define RFM64_SPI	1
 
 #endif

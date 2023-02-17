@@ -18,8 +18,9 @@
 #	along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
 
 #	Targets:
+#		default: make clean && make image
 #		clean: removes all object and binary files
-#		default: compiles and links
+#		image: makes an image to upload to the target
 #		srec: objcopy the ELF to an S-record file in the bin directory
 
 # Find out where we are :-)
@@ -74,8 +75,11 @@ LD_OPT		+=	-lc
 LD_OBJS		+= $(OBJ_D)/weather-station.o
 LD_OBJS		+= $(OBJ_D)/led.o
 LD_OBJS		+= $(OBJ_D)/gather.o
+LD_OBJS		+= $(OBJ_D)/command.o
 LD_OBJS		+= $(OBJ_D)/record.o
 LD_OBJS		+= $(OBJ_D)/convert.o
+LD_OBJS		+= $(OBJ_D)/sensor.o
+LD_OBJS		+= $(OBJ_D)/hoperf-rfm64.o
 LD_OBJS		+= $(OBJ_D)/tty1.o
 LD_OBJS		+= $(OBJ_D)/tty2.o
 LD_OBJS		+= $(OBJ_D)/ws-blue-pill.o
@@ -100,7 +104,9 @@ LD_OBJS		+= $(OBJ_D)/dv-cortexm-ctxsw.o
 LD_OBJS		+= $(OBJ_D)/dv-nvic.o
 
 LD_OBJS		+= $(OBJ_D)/dv-stm32-rcc.o
+LD_OBJS		+= $(OBJ_D)/dv-stm32-gpio.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-uart.o
+LD_OBJS		+= $(OBJ_D)/dv-stm32-spi.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-timx.o
 
 VPATH		+=	$(DAVROSKA_ROOT)/hardware/arm/c
@@ -110,9 +116,10 @@ VPATH		+=	$(DAVROS_ROOT)/lib/c
 VPATH		+=	$(DAVROS_ROOT)/devices/c
 VPATH		+=	$(DAVROS_ROOT)/devices/s
 
-.PHONY:		default all help clean install srec image
+.PHONY:		default all help clean install srec image speed
 
-default:	image
+default:
+	make clean && make -j24 image
 
 clean:
 	-rm -rf $(BIN_D)

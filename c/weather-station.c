@@ -26,13 +26,16 @@
 #include <ws-blue-pill.h>
 #include <weather-station.h>
 
+#include <dv-stm32-spi.h>
+#include <hoperf-rfm64.h>
+
 /* Object identifiers
 */
-dv_id_t Init, Led, Gather;					/* Tasks */
+dv_id_t Init, Led, Gather, Command;			/* Tasks */
 dv_id_t Itty1, Itty2, Timer;				/* ISRs */
-											/* Mutexes */
 dv_id_t Ticker;								/* Counters */
 dv_id_t LedAlarm;							/* Alarms */
+dv_id_t SpiMutex;							/* Mutexes */
 
 /* main_Init() - start the ball rolling
 */
@@ -46,6 +49,16 @@ void main_Init(void)
 	 * interrupts are disabled and there are no ISRs.
 	*/
 	tty1_init();
+
+	for ( int i = 0; i < 32; i++ )
+	{
+		dv_u8_t rval;
+		int e = rfm64_read_cfgr(i, &rval);
+		if ( e == 0 )
+			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
+		else
+			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
+	}
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
@@ -65,9 +78,10 @@ void main_Timer(void)
 void callout_addtasks(dv_id_t mode)
 {
 	Init = dv_addtask("Init", &main_Init, 4, 1);
-	Led  = dv_addtask("Led",  &main_Led,  1, 1);
+	Led  = dv_addtask("Led",  &main_Led,  3, 1);
 
-	Gather = dv_addextendedtask("Gather", &main_Gather, 2, 512);
+	Gather  = dv_addextendedtask("Gather",  &main_Gather,  2, 512);
+	Command = dv_addextendedtask("Command", &main_Command, 1, 512);
 }
 
 /* callout_addisrs() - configure the isrs
@@ -89,6 +103,7 @@ void callout_addgroups(dv_id_t mode)
 */
 void callout_addmutexes(dv_id_t mode)
 {
+	SpiMutex = dv_addmutex("SpiMutex", 1);
 }
 
 /* callout_addcounters() - configure the counters
@@ -112,6 +127,7 @@ void callout_autostart(dv_id_t mode)
 	dv_activatetask(Init);
 	dv_activatetask(Led);
 	dv_activatetask(Gather);
+	dv_activatetask(Command);
 
 	/* Set the 1 ms tick interrupt running
 	*/

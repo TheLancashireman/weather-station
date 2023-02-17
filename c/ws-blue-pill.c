@@ -107,6 +107,8 @@ void dv_reset(void)
 	/* Initialise uart1 and connect it to the stdio functions (polled mode)
 	 * Done here so that printf() is available during startup.
 	*/
+	dv_stm32_gpio_pinmode('a', 9, DV_GPIO_ALT_PP_50);
+	dv_stm32_gpio_pinmode('a', 10, DV_GPIO_IN_PUD);
 	(void)dv_stm32_uart_init(1, 115200, "8N1");
 	dv_consoledriver.putc = uart1_putc;
 	dv_consoledriver.getc = uart1_getc;
@@ -115,6 +117,8 @@ void dv_reset(void)
 
 	/* Initialise uart2 for tty2
 	*/
+	dv_stm32_gpio_pinmode('a', 2, DV_GPIO_ALT_PP_50);
+	dv_stm32_gpio_pinmode('a', 3, DV_GPIO_IN_PUD);
 	(void)dv_stm32_uart_init(2, 9600, "8N1");
 
 	/* Initialise GPIO C for the on-board LED
