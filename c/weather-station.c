@@ -27,7 +27,6 @@
 #include <weather-station.h>
 
 #include <dv-stm32-spi.h>
-#include <hoperf-rfm64.h>
 
 /* Object identifiers
 */
@@ -37,6 +36,10 @@ dv_id_t Ticker;								/* Counters */
 dv_id_t LedAlarm;							/* Alarms */
 dv_id_t SpiMutex;							/* Mutexes */
 
+/* Global state variables
+*/
+dv_boolean_t logging;
+
 /* main_Init() - start the ball rolling
 */
 void main_Init(void)
@@ -45,20 +48,15 @@ void main_Init(void)
 	*/
 	dv_printf("main_Init() reached\n");
 
+	/* Initialise vars
+	*/
+	logging = 1;
+
 	/* Switch uart1 to tty (interrupt driven) mode. Cannot do this earlier because
 	 * interrupts are disabled and there are no ISRs.
 	*/
 	tty1_init();
 
-	for ( int i = 0; i < 32; i++ )
-	{
-		dv_u8_t rval;
-		int e = rfm64_read_cfgr(i, &rval);
-		if ( e == 0 )
-			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
-		else
-			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
-	}
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
@@ -137,11 +135,6 @@ void callout_autostart(dv_id_t mode)
 	/* Initialise uart2 for receiving sensor data
 	*/
 	tty2_init();
-
-	/* TEMPORARY for testing - enable uart1 rx interrupts
-	*/
-	dv_uart1.cr[0] |= DV_UART_RXNEIE;
-	dv_enable_irq(dv_irq_usart1);
 }
 
 /* callout_reporterror() - called if an error is detected

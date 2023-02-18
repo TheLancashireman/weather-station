@@ -43,13 +43,17 @@ void main_Gather(void)
 		dv_getevent(Gather, &evts);
 		dv_clearevent(evts);
 
-		if ( (evts & ev_tty2_overrun) != 0 )
+		if ( (evts & ev_tty_overrun) != 0 )
 		{
+			int c;
 			/* Clear the tty2 input stream
 			*/
+			while ( (c = tty2_getc()) >= 0 )
+			{
+			}
 		}
 
-		if ( (evts & ev_tty2_rxline) != 0 )
+		if ( (evts & ev_tty_rxline) != 0 )
 		{
 			/* Process the tty2 input stream
 			*/

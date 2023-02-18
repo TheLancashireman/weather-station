@@ -63,14 +63,17 @@ void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max
 		idx = new_sensor(id, 'T');
 	}
 #else
-	fixedpoint_printable_t tcur, tmax, tmin;
-	fixedpoint_to_printable(current, &tcur);
-	fixedpoint_to_printable(min, &tmin);
-	fixedpoint_to_printable(max, &tmax);
+	if ( logging )
+	{
+		fixedpoint_printable_t tcur, tmax, tmin;
+		fixedpoint_to_printable(current, &tcur);
+		fixedpoint_to_printable(min, &tmin);
+		fixedpoint_to_printable(max, &tmax);
 
-	//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
-	dv_printf("Sensor %02x: temperature %c%d.%04d ( %c%d.%04d .. %c%d.%04d )\n", id,
-				tcur.sign, tcur.i, tcur.f, tmin.sign, tmin.i, tmin.f, tmax.sign, tmax.i, tmax.f);
+		//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
+		dv_printf("Sensor %02x: temperature %c%d.%04d ( %c%d.%04d .. %c%d.%04d )\n", id,
+					tcur.sign, tcur.i, tcur.f, tmin.sign, tmin.i, tmin.f, tmax.sign, tmax.i, tmax.f);
+	}
 #endif
 }
 

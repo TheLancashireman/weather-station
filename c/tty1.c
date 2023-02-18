@@ -136,18 +136,16 @@ void main_Itty1(void)
 			*/
 			if ( tty1_overruns < 0xffffffff )
 				tty1_overruns++;
-#if 0
-			(void)dv_setevent(XXXXX, ev_tty1_overrun);
-#endif
+
+			(void)dv_setevent(Command, ev_tty_overrun);
 		}
-#if 0
-		if ( c == '\n' )
+
+		if ( (c == '\n') || (c == '\r') )
 		{
 			/* Full line received. Inform the command interpreter
 			*/
-			(void)dv_setevent(XXXXX,ev_tty1_rxline);
+			(void)dv_setevent(Command, ev_tty_rxline);
 		}
-#endif
 	}
 
 	while ( dv_stm32_uart_istx(&dv_uart1) )

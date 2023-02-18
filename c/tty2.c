@@ -104,13 +104,13 @@ void main_Itty2(void)
 			*/
 			if ( tty2_overruns < 0xffffffff )
 				tty2_overruns++;
-			(void)dv_setevent(Gather, ev_tty2_overrun);
+			(void)dv_setevent(Gather, ev_tty_overrun);
 		}
 		if ( c == '\n' )
 		{
 			/* Full line received. Inform the data gathering task
 			*/
-			(void)dv_setevent(Gather,ev_tty2_rxline);
+			(void)dv_setevent(Gather, ev_tty_rxline);
 		}
 	}
 

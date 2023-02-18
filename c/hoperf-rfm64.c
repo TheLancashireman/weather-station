@@ -46,3 +46,15 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 
 	return 0;
 }
+
+#if 0
+	for ( int i = 0; i < 32; i++ )
+	{
+		dv_u8_t rval;
+		int e = rfm64_read_cfgr(i, &rval);
+		if ( e == 0 )
+			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
+		else
+			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
+	}
+#endif

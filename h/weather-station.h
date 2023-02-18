@@ -30,15 +30,10 @@ extern dv_id_t Ticker;							/* Counters */
 extern dv_id_t LedAlarm;						/* Alarms */
 extern dv_id_t SpiMutex;						/* Mutexes */
 
-/* Events for the Gather task
+/* Events for the Gather and Command tasks
 */
-#define ev_tty2_overrun		0x00000001
-#define ev_tty2_rxline		0x00000002
-
-/* Events for the Command task
-*/
-#define ev_tty1_overrun		0x00000001
-#define ev_tty1_rxline		0x00000002
+#define ev_tty_overrun		0x00000001
+#define ev_tty_rxline		0x00000002
 
 /* Task and ISR main functions
 */
@@ -80,5 +75,9 @@ extern int tty2_getc(void);
 /* SPI configuration
 */
 #define RFM64_SPI	1
+
+/* Global state variables
+*/
+extern dv_boolean_t logging;
 
 #endif
