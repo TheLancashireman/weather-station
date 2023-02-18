@@ -51,7 +51,7 @@
 
 /* The maximum SPI clock speed. Data is slower than config
 */
-#define RFM64_MAXBAUD_CFG			6000000
+#define RFM64_MAXBAUD_CFG			1000000
 #define RFM64_MAXBAUD_DATA			1000000
 
 
@@ -169,7 +169,7 @@
  *
  * CR2: 0 (all interrupts disabled)
 */
-#define RFM64_STM32_SPI_MODE		(DV_SPI_SSM | DV_SPI_MSTR)
+#define RFM64_STM32_SPI_MODE		(DV_SPI_SSM | DV_SPI_SSI | DV_SPI_MSTR)
 
 /* API functions
 */

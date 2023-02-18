@@ -20,6 +20,30 @@
  *
  *
 */
+/*	Blue Pill pinout and use in this project
+ *
+ *							  USB
+ *						PB12		GND
+ *						PB13		GND
+ *						PB14		3V3
+ *						PA8			NRST
+ *		TX1				PA9			PB10
+ *		RX1				PA10		PB1
+ *						PA11		PB0
+ *						PA12		PA7			MOSI
+ *						PA15		PA6			MISO
+ *						PB3			PA5			SCK
+ *						PB4			PA4			NSS_CONFIG (RFM64)
+ *						PB5			PA3			RX2
+ *						PB6			PA2			TX2
+ *						PB7			PA1
+ *						PB8			PA0
+ *						PB9			PC15
+ *						5V			PC14
+ *						GND			PC13
+ *						3V3			VBAT
+ *							  DBG
+*/
 #ifndef WS_BLUE_PILL_H
 #define WS_BLUE_PILL_H	1
 
@@ -30,7 +54,38 @@
 #include <dv-stm32-interrupts.h>
 #include <dv-stm32-gpio.h>
 
-#define LED_PIN	13	/* On-board LED */
+/* On-board LED
+*/
+#define LED_PORT		'c'	
+#define LED_PIN			13
+
+/* UART1 - not remapped
+*/
+#define UART1_TX_PORT	'a'
+#define UART1_TX_PIN	9
+#define UART1_RX_PORT	'a'
+#define UART1_RX_PIN	10
+
+/* UART2 - not remapped
+*/
+#define UART2_TX_PORT	'a'
+#define UART2_TX_PIN	2
+#define UART2_RX_PORT	'a'
+#define UART2_RX_PIN	3
+
+/* SPI1 - not remapped
+*/
+#define SCK1_PORT		'a'
+#define SCK1_PIN		5
+#define MISO1_PORT		'a'
+#define MISO1_PIN		6
+#define MOSI1_PORT		'a'
+#define MOSI1_PIN		7
+
+/* SPI slave selects
+*/
+#define RFM64_CONFIG_PORT	'a'
+#define RFM64_CONFIG_PIN	4
 
 extern void init_millisecond_ticker(void);
 

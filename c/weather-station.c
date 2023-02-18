@@ -56,7 +56,6 @@ void main_Init(void)
 	 * interrupts are disabled and there are no ISRs.
 	*/
 	tty1_init();
-
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
@@ -102,6 +101,7 @@ void callout_addgroups(dv_id_t mode)
 void callout_addmutexes(dv_id_t mode)
 {
 	SpiMutex = dv_addmutex("SpiMutex", 1);
+			   dv_addmutexuser(SpiMutex, Command);
 }
 
 /* callout_addcounters() - configure the counters

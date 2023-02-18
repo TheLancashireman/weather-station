@@ -29,12 +29,8 @@ static dv_boolean_t ledstate;
 */
 void main_Led(void)
 {
+	dv_stm32_gpio_pinset('c', LED_PIN, ledstate);	/* Inverse! */
 	ledstate = !ledstate;
-
-	if ( ledstate )
-		dv_gpio_c.brr = 0x1 << LED_PIN;
-	else
-		dv_gpio_c.bsrr = 0x1 << LED_PIN;
 
 	dv_setalarm_rel(Ticker, LedAlarm, ledstate ? 20 : 4980);
 }

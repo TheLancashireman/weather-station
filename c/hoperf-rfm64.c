@@ -18,8 +18,11 @@
  * along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <weather-station.h>
+#include <ws-blue-pill.h>
 #include <hoperf-rfm64.h>
 #include <dv-stm32-spi.h>
+#include <dv-stm32-gpio.h>
+#include <dv-stm32-rcc.h>
 
 /* rfm64_read_cfgr() - read a single configuration register
 */
@@ -32,15 +35,26 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 	if ( dv_takemutex(SpiMutex) != dv_e_ok )
 		return 2;
 
-	/* ToDo: set NSS_CONFIG output low */
-
+	/* Initialise SPI for the RFM64 config slave
+	*/
 	dv_stm32_spi_init(RFM64_SPI, RFM64_MAXBAUD_CFG, RFM64_STM32_SPI_MODE);
+
+	/* DEBUG */
+	dv_printf("SPI1: cr1 0x%04x cr2 0x%04x sr 0x%04x\n", dv_spi1.cr[0], dv_spi1.cr[1], dv_spi1.sr);
+
+	/* Set NSS_CONFIG output low to select the slave
+	*/
+	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 0);
+
 	dv_stm32_spi_put(spi, RFM64_CMD(adr, RFM64_CMD_R));
 	dv_stm32_spi_put(spi, 0);
+	dv_stm32_spi_get(spi);			// Discard the byte received while sending the command
 	*out = dv_stm32_spi_get(spi);
 	dv_stm32_spi_disable(RFM64_SPI);
 
-	/* ToDo: set NSS_CONFIG output high */
+	/* Set NSS_CONFIG output high to deselect the slave
+	*/
+	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
 
 	dv_dropmutex(SpiMutex);
 

@@ -17,30 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*	Blue Pill pinout and use in this project
- *
- *							  USB
- *						PB12		GND
- *						PB13		GND
- *						PB14		3V3
- *						PA8			NRST
- *						PA9			PB10
- *		TX1				PA10		PB1
- *		RX1				PA11		PB0
- *						PA12		PA7
- *						PA15		PA6
- *		SCK				PB3			PA5
- *		MISO			PB4			PA4
- *		MOSI			PB5			PA3			RX2
- *						PB6			PA2			TX2
- *						PB7			PA1
- *						PB8			PA0
- *						PB9			PC15
- *						5V			PC14
- *						GND			PC13
- *						3V3			VBAT
- *							  DBG
-*/
 #define DV_ASM	0
 #include <dv-config.h>
 #include <davroska.h>
@@ -131,8 +107,8 @@ void dv_reset(void)
 	/* Initialise uart1 and connect it to the stdio functions (polled mode)
 	 * Done here so that printf() is available during startup.
 	*/
-	dv_stm32_gpio_pinmode('a', 9, DV_GPIO_ALT_PP_50);
-	dv_stm32_gpio_pinmode('a', 10, DV_GPIO_IN_PUD);
+	dv_stm32_gpio_pinmode(UART1_TX_PORT, UART1_TX_PIN, DV_GPIO_ALT_PP_50);
+	dv_stm32_gpio_pinmode(UART1_RX_PORT, UART1_RX_PIN, DV_GPIO_IN_PUD);
 	(void)dv_stm32_uart_init(1, 115200, "8N1");
 	dv_consoledriver.putc = uart1_putc;
 	dv_consoledriver.getc = uart1_getc;
@@ -141,32 +117,32 @@ void dv_reset(void)
 
 	/* Initialise uart2 for tty2
 	*/
-	dv_stm32_gpio_pinmode('a', 2, DV_GPIO_ALT_PP_50);
-	dv_stm32_gpio_pinmode('a', 3, DV_GPIO_IN_PUD);
+	dv_stm32_gpio_pinmode(UART2_TX_PORT, UART2_TX_PIN, DV_GPIO_ALT_PP_50);
+	dv_stm32_gpio_pinmode(UART2_RX_PORT, UART2_RX_PIN, DV_GPIO_IN_PUD);
 	(void)dv_stm32_uart_init(2, 9600, "8N1");
 
 	/* Initialise GPIO C for the on-board LED
 	 *
-	 * Pin 13 (LED_PIN) output, open-drain, 50 MHz, output to 1 (turn off)
+	 * Pin c13 (LED_PIN) output, open-drain, 50 MHz, output to 1 (turn off)
 	*/
-	do {
-		dv_rcc.apb2en |= DV_RCC_IOPC;
-		int cr = LED_PIN / 8;
-		int shift = (LED_PIN % 8) * 4;
-		dv_u32_t mask = 0xf << shift;
-		dv_u32_t val = DV_GPIO_OUT_OD_50 << shift;
-		dv_gpio_c.cr[cr] = (dv_gpio_c.cr[cr] & mask) | val;
-		dv_gpio_c.bsrr = 0x1 << LED_PIN;
-	} while (0);
+	dv_stm32_gpio_pinmode(LED_PORT, LED_PIN, DV_GPIO_OUT_OD_50);
+	dv_stm32_gpio_pinset(LED_PORT, LED_PIN, 1);
 
 	/* Initialise pins for spi1. SPI initialisation depends on the device and takes
 	 * place just before use.
 	 * SPI used as master only.
 	 * Chip select outputs are under software control using several output pins, so NSS1 not controlled by SPI.
 	*/
-	dv_stm32_gpio_pinmode('b', 3, DV_GPIO_ALT_PP_50);	/* SCK1 */
-	dv_stm32_gpio_pinmode('b', 4, DV_GPIO_IN_PUD);		/* MISO1 */
-	dv_stm32_gpio_pinmode('b', 5, DV_GPIO_ALT_PP_50);	/* MOSI1 */
+	dv_rcc.apb2en |= DV_RCC_SPI1;
+	dv_stm32_gpio_pinmode(SCK1_PORT, SCK1_PIN, DV_GPIO_ALT_PP_50);		/* SCK1 */
+	dv_stm32_gpio_pinmode(MISO1_PORT, MISO1_PIN, DV_GPIO_IN_PUD);		/* MISO1 */
+	dv_stm32_gpio_pinset(MISO1_PORT, MISO1_PIN, 1); 					/* Pull up on MISO1 */
+	dv_stm32_gpio_pinmode(MOSI1_PORT, MOSI1_PIN, DV_GPIO_ALT_PP_50);	/* MOSI1 */
+
+	/* SPI slave select pins. Set iniitial state to 1
+	*/
+	dv_stm32_gpio_pinmode(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, DV_GPIO_OUT_OD_50);
+	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
 
 	/* It would be possible to pass main() as the function pointer here,
 	 * but for the time being we'll use an intermediate function so that we can find out

@@ -21,10 +21,13 @@
 #include <dv-config.h>
 #include <weather-station.h>
 #include <dv-string.h>
+#include <dv-string.h>
+#include <hoperf-rfm64.h>
 
 #define MAXCOMMAND	15
 
 static void process_command(char *cmd);
+static void read_next_rfm_config(void);
 
 /* main_Command() - main function for the data gathering task
 */
@@ -94,8 +97,33 @@ static void process_command(char *cmd)
 		dv_printf("logging disabled\n");
 		logging = 0;
 	}
+	else if ( dv_strcmp(cmd, "r") == 0 )
+	{
+		read_next_rfm_config();
+	}
 	else
 	{
 		dv_printf("wot?\n");
 	}
+}
+
+/* TEMPORARY
+*/
+static dv_u8_t reg;
+static void read_next_rfm_config(void)
+{
+	dv_printf("reading RFM64 config register %u\n", reg);
+
+	dv_u8_t rval;
+	int e = rfm64_read_cfgr(reg, &rval);
+
+	if ( e == 0 )
+		dv_printf("RFM64 config register %u, value = 0x%02x\n", reg, rval);
+	else
+		dv_printf("rfm64_read_cfgr() returned %d\n", e);
+
+	if ( reg < 32 )
+		reg++;
+	else
+		reg = 0;
 }
