@@ -24,6 +24,8 @@
 #include <dv-stm32-gpio.h>
 #include <dv-stm32-rcc.h>
 
+int rfm64_debug = 0;
+
 /* rfm64_read_cfgr() - read a single configuration register
 */
 int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
@@ -40,17 +42,17 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 	dv_stm32_spi_init(RFM64_SPI, RFM64_MAXBAUD_CFG, RFM64_STM32_SPI_MODE);
 
 	/* DEBUG */
-	dv_printf("SPI1: cr1 0x%04x cr2 0x%04x sr 0x%04x\n", dv_spi1.cr[0], dv_spi1.cr[1], dv_spi1.sr);
+	if ( rfm64_debug )
+		dv_printf("SPI1: cr1 0x%04x cr2 0x%04x sr 0x%04x\n", dv_spi1.cr[0], dv_spi1.cr[1], dv_spi1.sr);
 
 	/* Set NSS_CONFIG output low to select the slave
 	*/
 	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 0);
 
-	dv_stm32_spi_put(spi, RFM64_CMD(adr, RFM64_CMD_R));
-	dv_stm32_spi_put(spi, 0);
+	dv_stm32_spi_put(spi, RFM64_CMD(adr, 0));
 	dv_stm32_spi_get(spi);			// Discard the byte received while sending the command
+	dv_stm32_spi_put(spi, 0);
 	*out = dv_stm32_spi_get(spi);
-	dv_stm32_spi_disable(RFM64_SPI);
 
 	/* Set NSS_CONFIG output high to deselect the slave
 	*/
@@ -60,15 +62,3 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 
 	return 0;
 }
-
-#if 0
-	for ( int i = 0; i < 32; i++ )
-	{
-		dv_u8_t rval;
-		int e = rfm64_read_cfgr(i, &rval);
-		if ( e == 0 )
-			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
-		else
-			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
-	}
-#endif

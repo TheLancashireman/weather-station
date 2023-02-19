@@ -88,6 +88,15 @@ int tty1_getc(void)
 	return dv_rb_u8_get(&tty1_rx_rbm, tty1_rx_rb);
 }
 
+/* Flush the tx ringbuffer
+*/
+void tty1_flush(void)
+{
+	while ( !dv_rb_empty(&tty1_tx_rbm) )
+	{
+	}
+}
+
 /* tty1_init() - initialise uart1 for buffer handling
  *
  * uart1 has already been initialised for the console, but the console tx is operating in polled mode

@@ -57,6 +57,7 @@ extern dv_boolean_t tty1_isrx(void);
 extern dv_boolean_t tty1_istx(void);
 extern dv_boolean_t tty1_putc(int c);
 extern int tty1_getc(void);
+extern void tty1_flush(void);
 /* tty1 polled
 */
 extern dv_boolean_t uart1_isrx(void);

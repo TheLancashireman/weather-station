@@ -28,6 +28,7 @@
 
 static void process_command(char *cmd);
 static void read_next_rfm_config(void);
+static void read_rfm_config(void);
 
 /* main_Command() - main function for the data gathering task
 */
@@ -101,6 +102,16 @@ static void process_command(char *cmd)
 	{
 		read_next_rfm_config();
 	}
+	else if ( dv_strcmp(cmd, "R") == 0 )
+	{
+		read_rfm_config();
+	}
+	else if ( dv_strcmp(cmd, "D") == 0 )
+	{
+		extern int rfm64_debug;
+		rfm64_debug = !rfm64_debug;
+		dv_printf("rfm64 debug %sabled\n", rfm64_debug ? "en" : "dis");
+	}
 	else
 	{
 		dv_printf("wot?\n");
@@ -122,8 +133,31 @@ static void read_next_rfm_config(void)
 	else
 		dv_printf("rfm64_read_cfgr() returned %d\n", e);
 
-	if ( reg < 32 )
+	if ( reg < 31 )
 		reg++;
 	else
 		reg = 0;
+}
+
+static void read_rfm_config(void)
+{
+	dv_printf("reading RFM64 configuration\n");
+
+#if 1
+	extern dv_u8_t led_rfm64_reg;
+	led_rfm64_reg = 0;		// Temporary
+	return;
+#endif
+
+	for ( dv_u8_t i = 0; i < 32; i++ )
+	{
+		dv_u8_t rval;
+		int e = rfm64_read_cfgr(i, &rval);
+		if ( e == 0 )
+			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
+		else
+			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
+	}
+	tty1_flush();
+	reg = 0;
 }

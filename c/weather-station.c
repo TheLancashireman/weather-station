@@ -102,6 +102,7 @@ void callout_addmutexes(dv_id_t mode)
 {
 	SpiMutex = dv_addmutex("SpiMutex", 1);
 			   dv_addmutexuser(SpiMutex, Command);
+			   dv_addmutexuser(SpiMutex, Led);
 }
 
 /* callout_addcounters() - configure the counters

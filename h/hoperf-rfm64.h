@@ -45,14 +45,14 @@
  *  Dn = data
  *  x  = don't care
 */
-#define RFM64_CMD_W					0x40
-#define RFM64_CMD_R					0x00
-#define RFM64_CMD(adr, w)			( ((adr) << 1) | ((w) ? RFM64_CMD_W : 0) )
+#define RFM64_CMD_W					0x00
+#define RFM64_CMD_R					0x40
+#define RFM64_CMD(adr, w)			( (((dv_u8_t)(adr)) << 1) | ((w) ? RFM64_CMD_W : RFM64_CMD_R) )
 
 /* The maximum SPI clock speed. Data is slower than config
 */
-#define RFM64_MAXBAUD_CFG			1000000
-#define RFM64_MAXBAUD_DATA			1000000
+#define RFM64_MAXBAUD_CFG			300000
+#define RFM64_MAXBAUD_DATA			300000
 
 
 /* Bit fields in the config registers
