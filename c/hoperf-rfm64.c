@@ -31,6 +31,7 @@ int rfm64_debug = 0;
 int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 {
 	dv_spi_t *spi = dv_stm32_get_spi(RFM64_SPI);
+	volatile dv_u16_t rxdata;
 	if ( spi == DV_NULL )
 		return 1;
 
@@ -49,16 +50,20 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 	*/
 	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 0);
 
-	dv_stm32_spi_put(spi, RFM64_CMD(adr, 0));
-	dv_stm32_spi_get(spi);			// Discard the byte received while sending the command
-	dv_stm32_spi_put(spi, 0);
-	*out = dv_stm32_spi_get(spi);
+	rxdata = dv_stm32_spi_read_dr(spi);			// Read the data register to discard any leftover incoming byte
+	dv_stm32_spi_put(spi, RFM64_CMD(adr, 0));	// Send the command
+	dv_stm32_spi_waittx(spi);					// Wait until the command has gone
+	rxdata = dv_stm32_spi_get(spi);				// Discard the byte received while sending the command
+	dv_stm32_spi_put(spi, 0);					// Send 0 to clock the data into the rx buffer
+	rxdata = dv_stm32_spi_get(spi);				// Read the data
 
 	/* Set NSS_CONFIG output high to deselect the slave
 	*/
 	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
 
 	dv_dropmutex(SpiMutex);
+
+	*out = rxdata;
 
 	return 0;
 }
