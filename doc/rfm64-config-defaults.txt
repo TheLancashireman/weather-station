@@ -1,0 +1,35 @@
+RFM64 config defaults according to data sheet
+
+00	00110000 =	0x30
+01	00100100 =	0x24
+02	00000011 =	0x03	fdev = fxtal/32*(3+1) = 100 kHz ==> fxtal = 12800 kHz = 12.8 MHz
+03	00000111 =	0x07	bitrate = 12800 kHz / 2 * (7+1) * (15+1) = 50. Should be 25, so this reg default might be 0x0f
+04	00001111 =	0x0f	15 in calculation above
+05	110xx110 =	0xc6?
+06				0x6b
+07				0x2a
+08				0x1e
+09				0x77
+10				0x2f
+11				0x19
+						Reg 12 Res 2-0 = 000 ???
+12	00001111 =	0x0f
+13	000000rr =	0x0?	Bits 1 and 0 are status bits (read-only)
+14	0crc0cc1 =	0x??	r = read-only status, c = status, can be written
+15	00000000 =	0x00
+16	10100011 =	0xa3
+17	00111000 =	0x38
+18	00011000 =	0x18
+19	00000100 =	0x04
+20	???????? =	0x??	Read only; not to be written
+21	00000000 =	0x00
+22	00000000 =	0x00
+23	00000000 =	0x00
+24	00000000 =	0x00
+25	00000000 =	0x00
+26	01110010 =	0x72
+27	10111100 =	0xbc
+28	00000000 =	0x00
+29				0x00
+30	0100100r	0x4?	r = read-only status bit
+31	00000000 =	0x00

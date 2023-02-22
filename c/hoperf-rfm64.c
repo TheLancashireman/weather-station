@@ -61,6 +61,10 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 	*/
 	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
 
+	/* Disable the SPI peripheral
+	*/
+	dv_stm32_spi_disable(RFM64_SPI);
+
 	dv_dropmutex(SpiMutex);
 
 	*out = rxdata;
