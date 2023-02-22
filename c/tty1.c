@@ -132,6 +132,16 @@ void tty1_init(void)
 	dv_enable_irq(dv_irq_usart1);
 }
 
+/* console_polled() - switch console to polled mode. Useful after an exception
+*/
+void console_polled(void)
+{
+	dv_consoledriver.putc = uart1_putc;
+	dv_consoledriver.getc = uart1_getc;
+	dv_consoledriver.istx = uart1_istx;
+	dv_consoledriver.isrx = uart1_isrx;
+}
+
 /* main_Itty1() - body of ISR to handle uart1 interrupt
 */
 void main_Itty1(void)

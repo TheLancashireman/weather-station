@@ -110,10 +110,7 @@ void dv_reset(void)
 	dv_stm32_gpio_pinmode(UART1_TX_PORT, UART1_TX_PIN, DV_GPIO_ALT_PP_50);
 	dv_stm32_gpio_pinmode(UART1_RX_PORT, UART1_RX_PIN, DV_GPIO_IN_PUD);
 	(void)dv_stm32_uart_init(1, 115200, "8N1");
-	dv_consoledriver.putc = uart1_putc;
-	dv_consoledriver.getc = uart1_getc;
-	dv_consoledriver.istx = uart1_istx;
-	dv_consoledriver.isrx = uart1_isrx;
+	console_polled();
 
 	/* Initialise uart2 for tty2
 	*/
@@ -192,6 +189,7 @@ void init_millisecond_ticker(void)
 
 void dv_panic_return_from_switchcall_function(void)
 {
+	console_polled();
 	dv_panic(dv_panic_ReturnFromLongjmp, dv_sid_scheduler, "Oops! The task wrapper returned");
 }
 
@@ -199,31 +197,37 @@ void dv_panic_return_from_switchcall_function(void)
 */
 void dv_nmi(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! An NMI occurred");
 }
 
 void dv_hardfault(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! A hardfault trap occurred");
 }
 
 void dv_memfault(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! A memfault trap occurred");
 }
 
 void dv_busfault(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! A busfault trap occurred");
 }
 
 void dv_usagefault(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! A usage fault occurred");
 }
 
 void dv_unknowntrap(void)
 {
+	console_polled();
 	dv_panic(dv_panic_Exception, dv_sid_exceptionhandler, "Oops! An undocumented trap occurred");
 }
 

@@ -64,6 +64,7 @@ extern dv_boolean_t uart1_isrx(void);
 extern dv_boolean_t uart1_istx(void);
 extern dv_boolean_t uart1_putc(int c);
 extern int uart1_getc(void);
+extern void console_polled(void);
 
 /* tty2 functions
 */

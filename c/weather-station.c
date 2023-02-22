@@ -172,6 +172,7 @@ void callout_idle(void)
 */
 void callout_panic(dv_panic_t p, dv_sid_t sid, char *fault)
 {
+	console_polled();
 	dv_printf("Panic %d in %d : %s\n", p, sid, fault);
 }
 
