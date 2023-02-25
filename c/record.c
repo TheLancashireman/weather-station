@@ -35,46 +35,56 @@ void record_sensor_start(dv_u8_t id)
 	*/
 	dv_printf("Sensor %02x: start record\n", id);
 
-	dv_u8_t idx = find_sensor(id);
-	if ( idx == 0xff )
+	dv_u8_t idx = get_sensor(id, '?');
+	if ( idx < MAX_SENSORS )
 	{
-		idx = new_sensor(id, '?');
-		dv_printf("New sensor %02x registered at %u\n", id, idx);
+		sensors[idx].n_starts++;
+		if ( logging )
+			dv_printf("Sensor %02x  at index %u restarted %u times\n", id, idx, sensors[idx].n_starts);
 	}
 	else
-	{
-		/* Start record for existing sensor
-		*/
-		sensors[idx].n_starts++;
-		dv_printf("Existing sensor %02x  at index %u restarted %u times\n", id, idx, sensors[idx].n_starts);
-	}
+	if ( idx == 0xff )
+		dv_printf("Sensor table overflow : id = %02x type = ?\n", id);
+	else
+	if ( logging )
+		dv_printf("New sensor %02x registered at %u\n", id, idx);
 }
 
 void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max)
 {
-#if 0
 	/* Debug
 	*/
-	dv_printf("Temperature data received: %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
+	dv_printf("Temperature data received: %02x: temperature %04x min %04x max %04x\n", id, current, min, max);
 
-	dv_u8_t idx = find_sensor(id);
-	if ( idx == 0xff )
+	dv_u8_t idx = get_sensor(id, 'T');
+
+	if ( idx < MAX_SENSORS )
 	{
-		idx = new_sensor(id, 'T');
+		/* Found a matching sensor
+		*/
+		sensors[idx].data.temp.last_reading = current;
+		sensors[idx].data.temp.sum += current;
+		sensors[idx].data.temp.n_readings++;
+		if ( sensors[idx].data.temp.reading_min > current )
+			sensors[idx].data.temp.reading_min = current;
+		if ( sensors[idx].data.temp.reading_max < current )
+			sensors[idx].data.temp.reading_max = current;
+		if ( sensors[idx].data.temp.sensor_min > min )
+			sensors[idx].data.temp.sensor_min = min;
+		if ( sensors[idx].data.temp.sensor_max < max )
+			sensors[idx].data.temp.sensor_max = max;
 	}
-#else
+
 	if ( logging )
 	{
-		fixedpoint_printable_t tcur, tmax, tmin;
-		fixedpoint_to_printable(current, &tcur);
-		fixedpoint_to_printable(min, &tmin);
-		fixedpoint_to_printable(max, &tmax);
+		fixedpoint_rounded_printable_t tcur, tmax, tmin;
+		fixedpoint_to_rounded_printable(current, &tcur);
+		fixedpoint_to_rounded_printable(min, &tmin);
+		fixedpoint_to_rounded_printable(max, &tmax);
 
-		//dv_printf("Sensor %02x: temperature %03x min %03x max %03x\n", id, current, min, max);
-		dv_printf("Sensor %02x: temperature %c%d.%04d ( %c%d.%04d .. %c%d.%04d )\n", id,
+		dv_printf("Sensor %02x: temperature %c%d.%c ( %c%d.%c .. %c%d.%c )\n", id,
 					tcur.sign, tcur.i, tcur.f, tmin.sign, tmin.i, tmin.f, tmax.sign, tmax.i, tmax.f);
 	}
-#endif
 }
 
 void record_sensor_error(dv_u8_t id, dv_u8_t errorcode)

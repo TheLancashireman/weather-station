@@ -23,6 +23,8 @@
 #include <convert.h>
 #include <dv-ctype.h>
 
+const char rounding_tbl[16] = {	'0', '1', '1', '2', '3', '3', '4', '4', '5', '6', '6', '7', '8', '8', '9', '9' };
+
 /* asciihex_to_u8() - convert an ascii-hex character to binary
  *
  * Parameter *must* be [0-9A-Fa-f] otherwise result is garbage
@@ -56,6 +58,23 @@ dv_u32_t asciihex_to_binary(char *b, int n)
 			return 0xffffffff;
 	}
 	return r;
+}
+
+/* fixedpoint_to_rounded_printable() - convert a 12-bit fixed point value to a printable form
+*/
+void fixedpoint_to_rounded_printable(dv_u16_t fpval, fixedpoint_rounded_printable_t *out)
+{
+	dv_u16_t t = fpval;
+
+	if ( t < 0x800 )
+		out->sign = '+';
+	else
+	{
+		out->sign = '-';
+		t = (~t + 1) & 0x7ff;
+	}
+	out->i = t >> 4;
+	out->f = rounding_tbl[t & 0xf];
 }
 
 /* fixedpoint_to_printable() - convert a 12-bit fixed point value to a printable form

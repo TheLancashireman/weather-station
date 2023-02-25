@@ -24,21 +24,16 @@
 
 #define MAX_SENSOR_STRING		32
 #define MAX_SENSORS				10
-#define MAX_TEMPERATURE_SENSORS	5
-#define MAX_TESTING_SENSORS		1
 
-/* Structure to hold information about an abstract sensor
+/* Structure to hold data from a testing sensor
+ * This is a dummy sensor type, only for testing
+ * To be deleted eventually.
 */
 typedef struct
 {
-	void *data;			/* Sensor data (data type depends on sensor type */
-	dv_u16_t n_starts;	/* Number of starts */
-	dv_u8_t id;			/* Sensor id */
-	char type;			/* Sensor type */
-} sensor_t;
-
-extern sensor_t sensors[MAX_SENSORS];
-extern dv_u8_t n_sensors;
+	dv_u16_t v1;
+	dv_u16_t v2;
+} testing_sensor_t;
 
 /* Structure to hold data from a temperature sensor
 */
@@ -53,21 +48,21 @@ typedef struct
 	dv_i16_t reading_max;	/* Highest reading observed */
 } temperature_sensor_t;
 
-extern temperature_sensor_t temperature_sensors[MAX_TEMPERATURE_SENSORS];
-extern dv_u8_t n_temperature_sensors;
-
-/* Structure to hold data from a testing sensor
- * This is a dummy sensor type, only for testing
- * To be deleted eventually.
+/* Structure to hold information about an abstract sensor
 */
 typedef struct
 {
-	dv_u16_t v1;
-	dv_u16_t v2;
-} testing_sensor_t;
+	dv_u16_t n_starts;	/* Number of starts */
+	dv_u8_t id;			/* Sensor id */
+	char type;			/* Sensor type */
+	union {
+		temperature_sensor_t temp;
+		testing_sensor_t testing;
+	} data;
+} sensor_t;
 
-extern testing_sensor_t testing_sensors[MAX_TESTING_SENSORS];
-extern dv_u8_t n_testing_sensors;
+extern sensor_t sensors[MAX_SENSORS];
+extern dv_u8_t n_sensors;
 
 /* Processsing functions
 */
@@ -81,5 +76,6 @@ extern void record_sensor_error(dv_u8_t id, dv_u8_t errorcode);
 extern void record_invalid_sensor_data(char *b, int e);
 extern dv_u8_t find_sensor(dv_u8_t id);
 extern dv_u8_t new_sensor(dv_u8_t id, char type);
+extern dv_u8_t get_sensor(dv_u8_t id, char type);
 
 #endif

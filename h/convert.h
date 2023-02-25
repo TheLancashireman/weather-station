@@ -33,11 +33,24 @@ typedef struct
 	char sign;		/* Sign: either '+' or '-' */
 } fixedpoint_printable_t;
 
+/* Structure to hold a fixed point value in a ready-to-print form (without using float)
+ * Fractional part is rounded to nearest 1dp and stored as char.
+ *
+ * Use the format specifier "%c%d.%c" to print.
+*/
+typedef struct
+{
+	dv_u16_t i;		/* Integer part */
+	char f;			/* Fractional part */
+	char sign;		/* Sign: either '+' or '-' */
+} fixedpoint_rounded_printable_t;
+
 /* Data conversion
 */
 extern dv_u32_t asciihex_to_4bit(char c);
 extern dv_u32_t asciihex_to_binary(char *b, int n);
 extern void fixedpoint_to_printable(dv_u16_t fpval, fixedpoint_printable_t *out);
+extern void fixedpoint_to_rounded_printable(dv_u16_t fpval, fixedpoint_rounded_printable_t *out);
 
 /* sign_extend_12() - sign-extend a 12-bit signed value to 16 bits
 */
