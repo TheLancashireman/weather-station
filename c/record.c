@@ -24,6 +24,10 @@
 #include <sensor.h>
 #include <dv-stdio.h>
 
+#ifndef DBG
+#define DBG	0
+#endif
+
 /* record_sensor_start() - record a sensor's start time
  *
  * A sensor start record is of the form "Sxx".
@@ -31,9 +35,11 @@
 */
 void record_sensor_start(dv_u8_t id)
 {
+#if DBG
 	/* Debug
 	*/
 	dv_printf("Sensor %02x: start record\n", id);
+#endif
 
 	dv_u8_t idx = get_sensor(id, '?');
 	if ( idx < MAX_SENSORS )
@@ -42,19 +48,15 @@ void record_sensor_start(dv_u8_t id)
 		if ( logging )
 			dv_printf("Sensor %02x  at index %u restarted %u times\n", id, idx, sensors[idx].n_starts);
 	}
-	else
-	if ( idx == 0xff )
-		dv_printf("Sensor table overflow : id = %02x type = ?\n", id);
-	else
-	if ( logging )
-		dv_printf("New sensor %02x registered at %u\n", id, idx);
 }
 
-void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max)
+void record_temperature(dv_u8_t id, dv_i16_t current, dv_i16_t min, dv_i16_t max)
 {
+#if DBG
 	/* Debug
 	*/
 	dv_printf("Temperature data received: %02x: temperature %04x min %04x max %04x\n", id, current, min, max);
+#endif
 
 	dv_u8_t idx = get_sensor(id, 'T');
 
@@ -62,6 +64,14 @@ void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max
 	{
 		/* Found a matching sensor
 		*/
+		if ( sensors[idx].data.temp.n_readings == 0 )		/* Needs improvement */
+		{
+			sensors[idx].data.temp.reading_min = 32767;
+			sensors[idx].data.temp.reading_max = -32767;
+			sensors[idx].data.temp.sensor_min = 32767;
+			sensors[idx].data.temp.sensor_max = -32767;
+		}
+
 		sensors[idx].data.temp.last_reading = current;
 		sensors[idx].data.temp.sum += current;
 		sensors[idx].data.temp.n_readings++;

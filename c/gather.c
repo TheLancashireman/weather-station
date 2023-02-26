@@ -199,6 +199,6 @@ void process_temperature(dv_u8_t id, char *b)
 
 		max = v;
 
-		record_temperature(id, current, min, max);
+		record_temperature(id, sign_extend_12(current), sign_extend_12(min), sign_extend_12(max));
 	}
 }

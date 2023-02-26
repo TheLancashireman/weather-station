@@ -20,6 +20,8 @@
 #define DV_ASM	0
 #include <dv-config.h>
 #include <weather-station.h>
+#include <sensor.h>
+#include <convert.h>
 #include <dv-string.h>
 #include <dv-string.h>
 #include <hoperf-rfm64.h>
@@ -86,7 +88,7 @@ void main_Command(void)
 */
 static void process_command(char *cmd)
 {
-	dv_printf("%s : ", cmd);
+	dv_printf("%s :\n", cmd);
 
 	if ( dv_strcmp(cmd, "log") == 0 )
 	{
@@ -97,6 +99,10 @@ static void process_command(char *cmd)
 	{
 		dv_printf("logging disabled\n");
 		logging = 0;
+	}
+	else if ( dv_strcmp(cmd, "dump") == 0 )
+	{
+		print_all_sensors();
 	}
 	else if ( dv_strcmp(cmd, "r") == 0 )
 	{

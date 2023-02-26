@@ -77,6 +77,7 @@ void fixedpoint_to_rounded_printable(dv_u16_t fpval, fixedpoint_rounded_printabl
 	out->f = rounding_tbl[t & 0xf];
 }
 
+#if 0
 /* fixedpoint_to_printable() - convert a 12-bit fixed point value to a printable form
 */
 void fixedpoint_to_printable(dv_u16_t fpval, fixedpoint_printable_t *out)
@@ -93,3 +94,4 @@ void fixedpoint_to_printable(dv_u16_t fpval, fixedpoint_printable_t *out)
 	out->i = t >> 4;
 	out->f = ((t & 0xf) * 10000)/16;
 }
+#endif

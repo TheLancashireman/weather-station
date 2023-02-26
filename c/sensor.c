@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with weather-station.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <sensor.h>
 #include <weather-station.h>
+#include <sensor.h>
+#include <convert.h>
 
 sensor_t sensors[MAX_SENSORS];
 dv_u8_t n_sensors;
@@ -31,13 +32,16 @@ dv_u8_t get_sensor(dv_u8_t id, char type)
 	dv_u8_t idx = find_sensor(id);
 	if ( idx < MAX_SENSORS )
 	{
-		if ( sensors[idx].type == '?' )
-			sensors[idx].type = type;
-		else
 		if ( sensors[idx].type != type )
 		{
-			dv_printf("Sensor type mismatch : id = %02x found %c  looking for %c\n", id, sensors[idx].type, type);
-			idx = 0xff;
+			if ( sensors[idx].type == '?' )
+				sensors[idx].type = type;
+			else
+			if ( type != '?' )
+			{
+				dv_printf("Sensor type mismatch : id = %02x found %c  looking for %c\n", id, sensors[idx].type, type);
+				idx = 0xff;
+			}
 		}
 	}
 	else
@@ -95,4 +99,67 @@ dv_u8_t new_sensor(dv_u8_t id, char type)
 		return idx;
 	}
 	return 0xff;
+}
+
+/* print_all_sensors() - print the sensor information
+*/
+void print_all_sensors(void)
+{
+	for ( int i = 0; i < n_sensors; i++ )
+	{
+		print_sensor(i);
+	}
+}
+
+/* print_sensor() - print information for one sensor
+*/
+void print_sensor(int s)
+{
+	dv_printf("Sensor %c%02x: %d starts, ", sensors[s].type, sensors[s].id, sensors[s].n_starts);
+	switch ( sensors[s].type )
+	{
+	case 'T':	print_temperature_sensor(s);			break;	
+	case 'X':	print_testing_sensor(s);				break;	
+	case '?':	dv_printf("unspecified sensor\n");		break;	
+	default:	dv_printf("unknown sensor\n");			break;	
+	}
+}
+
+/* print_temperature_sensor() - print information for a temperature sensor
+*/
+void print_temperature_sensor(int s)
+{
+	sensor_t *sx = &sensors[s];
+	fixedpoint_rounded_printable_t pval;
+
+	fixedpoint_to_rounded_printable(sx->data.temp.last_reading, &pval);
+	dv_printf("t = %c%d.%c, ", pval.sign, pval.i, pval.f);
+
+	fixedpoint_to_rounded_printable(sx->data.temp.sensor_min, &pval);
+	dv_printf("(%c%d.%c .. ", pval.sign, pval.i, pval.f);
+
+	fixedpoint_to_rounded_printable(sx->data.temp.sensor_max, &pval);
+	dv_printf("%c%d.%c) avg ", pval.sign, pval.i, pval.f);
+
+	if ( sx->data.temp.n_readings <= 0 )
+		dv_printf("--- (%d) ", sx->data.temp.n_readings);
+	else
+	{
+		dv_u16_t av = (sx->data.temp.sum + sx->data.temp.n_readings/2) / sx->data.temp.n_readings;
+		fixedpoint_to_rounded_printable(av, &pval);
+		dv_printf("%c%d.%c (%u) ",  pval.sign, pval.i, pval.f, sx->data.temp.n_readings);
+	}
+
+	fixedpoint_to_rounded_printable(sx->data.temp.reading_min, &pval);
+	dv_printf("(%c%d.%c .. ", pval.sign, pval.i, pval.f);
+
+	fixedpoint_to_rounded_printable(sx->data.temp.reading_max, &pval);
+	dv_printf("%c%d.%c)\n", pval.sign, pval.i, pval.f);
+}
+
+/* print_testing_sensor() - print information for a testing sensor
+*/
+void print_testing_sensor(int s)
+{
+	dv_printf("Testing sensor %d ... %04x %04x\n", sensors[s].data.testing.v1, sensors[s].data.testing.v2);
 }

@@ -71,11 +71,18 @@ extern void process_temperature(dv_u8_t id, char *b);
 /* Recording/logging functions
 */
 extern void record_sensor_start(dv_u8_t id);
-extern void record_temperature(dv_u8_t id, dv_u16_t current, dv_u16_t min, dv_u16_t max);
+extern void record_temperature(dv_u8_t id, dv_i16_t current, dv_i16_t min, dv_i16_t max);
 extern void record_sensor_error(dv_u8_t id, dv_u8_t errorcode);
 extern void record_invalid_sensor_data(char *b, int e);
 extern dv_u8_t find_sensor(dv_u8_t id);
 extern dv_u8_t new_sensor(dv_u8_t id, char type);
 extern dv_u8_t get_sensor(dv_u8_t id, char type);
+
+/* Printing functions
+*/
+extern void print_all_sensors(void);
+extern void print_sensor(int s);
+extern void print_temperature_sensor(int s);
+extern void print_testing_sensor(int s);
 
 #endif
