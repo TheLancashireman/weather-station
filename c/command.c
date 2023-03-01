@@ -29,7 +29,6 @@
 #define MAXCOMMAND	15
 
 static void process_command(char *cmd);
-static void read_next_rfm_config(void);
 static void read_rfm_config(void);
 
 /* main_Command() - main function for the data gathering task
@@ -106,10 +105,6 @@ static void process_command(char *cmd)
 	}
 	else if ( dv_strcmp(cmd, "r") == 0 )
 	{
-		read_next_rfm_config();
-	}
-	else if ( dv_strcmp(cmd, "R") == 0 )
-	{
 		read_rfm_config();
 	}
 	else if ( dv_strcmp(cmd, "D") == 0 )
@@ -126,44 +121,23 @@ static void process_command(char *cmd)
 
 /* TEMPORARY
 */
-static dv_u8_t reg;
-static void read_next_rfm_config(void)
-{
-	dv_printf("reading RFM64 config register %u\n", reg);
-
-	dv_u8_t rval;
-	int e = rfm64_read_cfgr(reg, &rval);
-
-	if ( e == 0 )
-		dv_printf("RFM64 config register %u, value = 0x%02x\n", reg, rval);
-	else
-		dv_printf("rfm64_read_cfgr() returned %d\n", e);
-
-	if ( reg < 31 )
-		reg++;
-	else
-		reg = 0;
-}
-
 static void read_rfm_config(void)
 {
-	dv_printf("reading RFM64 configuration\n");
+	dv_boolean_t save_lg = logging;
+	logging = 0;
 
-#if 1
-	extern dv_u8_t led_rfm64_reg;
-	led_rfm64_reg = 0;		// Temporary
-	return;
-#endif
+	dv_printf("reading RFM64 configuration\n");
 
 	for ( dv_u8_t i = 0; i < 32; i++ )
 	{
 		dv_u8_t rval;
 		int e = rfm64_read_cfgr(i, &rval);
 		if ( e == 0 )
-			dv_printf("rfm64 regiser %02d = 0x%02x\n", i, rval);
+			dv_printf("rfm64 register %02d = 0x%02x\n", i, rval);
 		else
 			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
 	}
 	tty1_flush();
-	reg = 0;
+
+	logging = save_lg;
 }
