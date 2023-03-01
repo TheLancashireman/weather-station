@@ -28,7 +28,7 @@ extern dv_id_t Init, Led, Gather, Command;		/* Tasks */
 extern dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 extern dv_id_t Ticker;							/* Counters */
 extern dv_id_t LedAlarm;						/* Alarms */
-extern dv_id_t SpiMutex;						/* Mutexes */
+extern dv_id_t SpiMutex, TtyMutex;				/* Mutexes */
 
 /* Events for the Gather and Command tasks
 */
