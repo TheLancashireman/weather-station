@@ -24,10 +24,6 @@
 #include <weather-station.h>
 
 static dv_boolean_t ledstate;
-#if 1
-#include <hoperf-rfm64.h>
-dv_u8_t led_rfm64_reg = 32;		// Temporary
-#endif
 
 /* main_Led() - task body function for the Led task
 */
@@ -35,21 +31,6 @@ void main_Led(void)
 {
 	dv_stm32_gpio_pinset('c', LED_PIN, ledstate);	/* Inverse! */
 	ledstate = !ledstate;
-#if 1
-	if ( led_rfm64_reg < 32 )
-	{
-		dv_u8_t rval;
-		int e = rfm64_read_cfgr(led_rfm64_reg, &rval);
-		if ( e == 0 )
-			dv_printf("Led: rfm64 register %02u = 0x%02x\n", led_rfm64_reg, rval);
-		else
-			dv_printf("Led: rfm64_read_cfgr(&u, ...) returned %d\n", led_rfm64_reg, e);
-		led_rfm64_reg++;
-		dv_setalarm_rel(Ticker, LedAlarm, 1000);
-		return;
-	}
-#endif
-
 	dv_setalarm_rel(Ticker, LedAlarm, ledstate ? 20 : 4980);
 }
 
