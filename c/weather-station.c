@@ -34,7 +34,7 @@ dv_id_t Init, Led, Gather, Command;			/* Tasks */
 dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 dv_id_t Ticker;								/* Counters */
 dv_id_t LedAlarm;							/* Alarms */
-dv_id_t SpiMutex;							/* Mutexes */
+dv_id_t SpiMutex, TtyMutex;					/* Mutexes */
 
 /* Global state variables
 */
@@ -101,8 +101,14 @@ void callout_addgroups(dv_id_t mode)
 void callout_addmutexes(dv_id_t mode)
 {
 	SpiMutex = dv_addmutex("SpiMutex", 1);
-			   dv_addmutexuser(SpiMutex, Command);
-			   dv_addmutexuser(SpiMutex, Led);
+	dv_addmutexuser(SpiMutex, Led);
+	dv_addmutexuser(SpiMutex, Command);
+
+	TtyMutex = dv_addmutex("TtyMutex", 1);
+	dv_addmutexuser(TtyMutex, Init);
+	dv_addmutexuser(TtyMutex, Led);
+	dv_addmutexuser(TtyMutex, Gather);
+	dv_addmutexuser(TtyMutex, Command);
 }
 
 /* callout_addcounters() - configure the counters
