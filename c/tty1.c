@@ -122,6 +122,7 @@ void tty1_init(void)
 	dv_consoledriver.getc = tty1_getc;
 	dv_consoledriver.istx = tty1_istx;
 	dv_consoledriver.isrx = tty1_isrx;
+	dv_printf_mutex = TtyMutex;
 
 	/* Enable the uart tx and rx interrupts
 	*/
@@ -140,6 +141,7 @@ void console_polled(void)
 	dv_consoledriver.getc = uart1_getc;
 	dv_consoledriver.istx = uart1_istx;
 	dv_consoledriver.isrx = uart1_isrx;
+	dv_printf_mutex = -1;
 }
 
 /* main_Itty1() - body of ISR to handle uart1 interrupt
