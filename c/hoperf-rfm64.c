@@ -48,7 +48,7 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 
 	/* Set NSS_CONFIG output low to select the slave
 	*/
-	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 0);
+	dv_stm32_gpio_pinset(RFM64_NSS_CONFIG_PORT, RFM64_NSS_CONFIG_PIN, 0);
 
 	rxdata = dv_stm32_spi_read_dr(spi);			// Read the data register to discard any leftover incoming byte
 	dv_stm32_spi_put(spi, RFM64_CMD(adr, 0));	// Send the command
@@ -59,7 +59,7 @@ int rfm64_read_cfgr(dv_u8_t adr, dv_u8_t *out)
 
 	/* Set NSS_CONFIG output high to deselect the slave
 	*/
-	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
+	dv_stm32_gpio_pinset(RFM64_NSS_CONFIG_PORT, RFM64_NSS_CONFIG_PIN, 1);
 
 	/* Disable the SPI peripheral
 	*/

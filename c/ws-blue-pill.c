@@ -138,8 +138,8 @@ void dv_reset(void)
 
 	/* SPI slave select pins. Set iniitial state to 1
 	*/
-	dv_stm32_gpio_pinmode(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, DV_GPIO_OUT_OD_50);
-	dv_stm32_gpio_pinset(RFM64_CONFIG_PORT, RFM64_CONFIG_PIN, 1);
+	dv_stm32_gpio_pinmode(RFM64_NSS_CONFIG_PORT, RFM64_NSS_CONFIG_PIN, DV_GPIO_OUT_OD_50);
+	dv_stm32_gpio_pinset(RFM64_NSS_CONFIG_PORT, RFM64_NSS_CONFIG_PIN, 1);
 
 	/* It would be possible to pass main() as the function pointer here,
 	 * but for the time being we'll use an intermediate function so that we can find out

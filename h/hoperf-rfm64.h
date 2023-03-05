@@ -51,8 +51,8 @@
 
 /* The maximum SPI clock speed. Data is slower than config
 */
-#define RFM64_MAXBAUD_CFG			300000
-#define RFM64_MAXBAUD_DATA			300000
+#define RFM64_MAXBAUD_CFG			6000000
+#define RFM64_MAXBAUD_DATA			1000000
 
 
 /* Bit fields in the config registers
@@ -162,7 +162,7 @@
  * CR1: DV_SPI_DFF = 0 (8-bit)
  * CR1: DV_SPI_RXONLY = 0
  * CR1: DV_SPI_SSM = 1 
- * CR1: DV_SPI_SSI = 0
+ * CR1: DV_SPI_SSI = 1
  * CR1: DV_SPI_LSBFIRST = 0 (MSB first)
  * CR1: DV_SPI_MSTR = 1
  * CR1: DV_SPI_CPOL = DV_SPI_CPHA = 0
