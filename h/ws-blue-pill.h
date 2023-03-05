@@ -22,27 +22,27 @@
 */
 /*	Blue Pill pinout and use in this project
  *
- *							  USB
- *						PB12		GND
- *						PB13		GND
- *						PB14		3V3
- *						PA8			NRST
- *		TX1				PA9			PB10
- *		RX1				PA10		PB1
- *						PA11		PB0
- *						PA12		PA7			MOSI
- *						PA15		PA6			MISO
- *						PB3			PA5			SCK
- *						PB4			PA4			NSS_CONFIG (RFM64)
- *						PB5			PA3			RX2
- *						PB6			PA2			TX2
- *						PB7			PA1
- *						PB8			PA0
- *						PB9			PC15
- *						5V			PC14
- *						GND			PC13
- *						3V3			VBAT
- *							  DBG
+ *                                 USB
+ *                        PB12 |         | GND
+ *                        PB13 |         | GND
+ *                        PB14 |         | 3V3
+ *                         PA8 |         | NRST
+ *        TX1              PA9 |         | PB10
+ *        RX1             PA10 |         | PB1
+ *                        PA11 |         | PB0
+ *                        PA12 |         | PA7   MOSI
+ *                        PA15 |         | PA6   MISO
+ *                         PB3 |         | PA5   SCK
+ *                         PB4 |         | PA4   NSS_CONFIG  (RFM64)
+ *                         PB5 |         | PA3   RX2
+ *                         PB6 |         | PA2   TX2
+ *                         PB7 |         | PA1   NSS_DATA    (RFM64)
+ *                         PB8 |         | PA0   POR         (RFM64)
+ *                         PB9 |         | PC15
+ *                          5V |         | PC14
+ *                         GND |         | PC13  On board LED
+ *                         3V3 |         | VBAT
+ *                                 DBG
 */
 #ifndef WS_BLUE_PILL_H
 #define WS_BLUE_PILL_H	1
@@ -84,8 +84,12 @@
 
 /* SPI slave selects
 */
-#define RFM64_CONFIG_PORT	'a'
-#define RFM64_CONFIG_PIN	4
+#define RFM64_NSS_CONFIG_PORT	'a'
+#define RFM64_NSS_CONFIG_PIN	4
+#define RFM64_NSS_DATA_PORT		'a'
+#define RFM64_NSS_DATA_PIN		1
+#define RFM64_POR_PORT			'a'
+#define RFM64_POR_PIN			0
 
 extern void init_millisecond_ticker(void);
 
