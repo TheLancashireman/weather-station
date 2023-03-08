@@ -24,37 +24,48 @@
 #		srec: objcopy the ELF to an S-record file in the bin directory
 
 # Find out where we are :-)
-PRJ_ROOT		?= $(shell pwd)
-DAVROS_ROOT		?= $(shell (cd $(PRJ_ROOT)/../../davros ; pwd))
+WS_ROOT			?= $(shell pwd)
+PRJ_ROOT		?= $(shell (cd $(WS_ROOT)/../.. ; pwd))
+DAVROS_ROOT		?= $(PRJ_ROOT)/davros
 DAVROSKA_ROOT	= $(DAVROS_ROOT)/davroska
 
 PROJECT			?= weather-station
 
+# 3rd party libraries etc.
+STM32CUBE		?= $(PRJ_ROOT)/OtherPeople/ST/STM32CubeF1
+TINYUSB_D		?= $(PRJ_ROOT)/OtherPeople/tinyusb
+
 # ARM gcc  ToDo: use clang?
-GNU_D		?=	/data1/gnu/gcc-arm-none-eabi-9-2019-q4-major
+GNU_D		?= /data1/gnu/gcc-arm-none-eabi-9-2019-q4-major
 
-WS_CC		?=	$(GNU_D)/bin/arm-none-eabi-gcc
-WS_LD		?=	$(GNU_D)/bin/arm-none-eabi-ld
-WS_OBJCOPY	?=	$(GNU_D)/bin/arm-none-eabi-objcopy
-WS_LDLIB_D	?=	$(GNU_D)/arm-none-eabi/lib/thumb/v7-m/nofp
-
-LDSCRIPT	?=	script/dv-blue-pill.ldscript
-
-ENTRY		?=	-e dv_reset
-
-IMAGE_FILE	?=	build/$(PROJECT).bin
-SREC_FILE	?=	build/$(PROJECT).srec
+WS_CC		?= $(GNU_D)/bin/arm-none-eabi-gcc
+WS_LD		?= $(GNU_D)/bin/arm-none-eabi-ld
+WS_AR		?= $(GNU_D)/bin/arm-none-eabi-ar
+WS_OBJCOPY	?= $(GNU_D)/bin/arm-none-eabi-objcopy
+WS_LDLIB_D	?= $(GNU_D)/arm-none-eabi/lib/thumb/v7-m/nofp
 
 BIN_D		= build
 OBJ_D		= build/obj
+LIB_D		= build/lib
+
+LDSCRIPT	?= script/dv-blue-pill.ldscript
+
+ENTRY		?= -e dv_reset
+
+IMAGE_FILE	?= build/$(PROJECT).bin
+SREC_FILE	?= build/$(PROJECT).srec
+LIBUSB_FILE	?= $(LIB_D)/libtusb.a
 
 CC_OPT		+= -mcpu=cortex-m3
-CC_OPT		+=	-D DV_DAVROSKA=1
+CC_OPT		+= -D DV_DAVROSKA=1
 CC_OPT		+= -I h
 CC_OPT		+= -I $(DAVROSKA_ROOT)/h
 CC_OPT		+= -I $(DAVROSKA_ROOT)/hardware
 CC_OPT		+= -I $(DAVROS_ROOT)/devices/h
 CC_OPT		+= -I $(DAVROS_ROOT)/lib/h
+CC_OPT		+= -I $(TINYUSB_D)/src
+CC_OPT		+= -I $(STM32CUBE)/Drivers/CMSIS/Device/ST/STM32F1xx/Include
+CC_OPT		+= -I $(STM32CUBE)/Drivers/CMSIS/Core/Include
 CC_OPT		+= -Wall
 CC_OPT		+= -fno-common
 #CC_OPT		+= -ffunction-sections -fdata-sections
@@ -67,9 +78,10 @@ CC_OPT		+= -O2
 
 LD_OPT		+= $(ENTRY)
 LD_OPT		+= -T $(LDSCRIPT)
-LD_OPT		+=	-L $(WS_LDLIB_D)
-LD_OPT		+=	-lc
-#LD_OPT		+=	--gc-sections
+LD_OPT		+= -L $(LIB_D)
+LD_OPT		+= -L $(WS_LDLIB_D)
+LD_OPT		+= -lc
+#LD_OPT		+= --gc-sections
 
 # The project code
 LD_OBJS		+= $(OBJ_D)/weather-station.o
@@ -82,6 +94,7 @@ LD_OBJS		+= $(OBJ_D)/sensor.o
 LD_OBJS		+= $(OBJ_D)/hoperf-rfm64.o
 LD_OBJS		+= $(OBJ_D)/tty1.o
 LD_OBJS		+= $(OBJ_D)/tty2.o
+LD_OBJS		+= $(OBJ_D)/ws-usb.o
 LD_OBJS		+= $(OBJ_D)/ws-blue-pill.o
 
 # davroska and associated library files
@@ -92,9 +105,9 @@ LD_OBJS		+= $(OBJ_D)/dv-printf.o
 LD_OBJS		+= $(OBJ_D)/dv-xprintf.o
 LD_OBJS		+= $(OBJ_D)/dv-memset32.o
 
-VPATH 		+=	c
-VPATH 		+=	s
-VPATH		+=	$(DAVROSKA_ROOT)/c
+VPATH 		+= c
+VPATH 		+= s
+VPATH		+= $(DAVROSKA_ROOT)/c
 
 # Hardware-specific files and paths
 LD_OBJS		+= $(OBJ_D)/davroska-cortexm.o
@@ -109,14 +122,22 @@ LD_OBJS		+= $(OBJ_D)/dv-stm32-uart.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-spi.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-timx.o
 
-VPATH		+=	$(DAVROSKA_ROOT)/hardware/arm/c
-VPATH		+=	$(DAVROSKA_ROOT)/hardware/arm/s
-VPATH		+=	$(DAVROSKA_ROOT)/hardware/common/c
-VPATH		+=	$(DAVROS_ROOT)/lib/c
-VPATH		+=	$(DAVROS_ROOT)/devices/c
-VPATH		+=	$(DAVROS_ROOT)/devices/s
+LD_LIB		+= -ltusb
 
-.PHONY:		default all help clean install srec image speed
+VPATH		+= $(DAVROSKA_ROOT)/hardware/arm/c
+VPATH		+= $(DAVROSKA_ROOT)/hardware/arm/s
+VPATH		+= $(DAVROSKA_ROOT)/hardware/common/c
+VPATH		+= $(DAVROS_ROOT)/lib/c
+VPATH		+= $(DAVROS_ROOT)/devices/c
+VPATH		+= $(DAVROS_ROOT)/devices/s
+
+# TinyUSB: src and all subdirectories
+VPATH       +=  $(shell find $(TINYUSB_D)/src -type d)
+
+# TinyUSB
+LIBUSB_OBJS	= $(shell $(DAVROS_ROOT)/scripts/tusb-list.sh $(TINYUSB_D) $(OBJ_D))
+
+.PHONY:		default all help clean install srec image libusb
 
 default:
 	make clean && make -j24 image
@@ -130,7 +151,13 @@ image:		$(OBJ_D) $(BIN_D) $(IMAGE_FILE)
 
 srec:		$(OBJ_D) $(BIN_D) $(SREC_FILE)
 
-$(BIN_D)/$(PROJECT).elf:	$(BIN_D) $(LD_OBJS)
+libusb:		$(OBJ_D) $(LIB_D) $(LIBUSB_FILE)
+
+$(LIBUSB_FILE):	$(LIBUSB_OBJS)
+	-rm $@
+	$(WS_AR) -crs $@ $(LIBUSB_OBJS)
+
+$(BIN_D)/$(PROJECT).elf:	$(BIN_D) $(LD_OBJS) libusb
 	$(WS_LD) -o $@ $(LD_OBJS) $(LD_LIB) $(LD_OPT)
 
 $(OBJ_D)/%.o:  %.c
@@ -144,6 +171,9 @@ $(BIN_D):
 
 $(OBJ_D):
 	mkdir -p $(OBJ_D)
+
+$(LIB_D):
+	mkdir -p $(LIB_D)
 
 install:		$(OBJ_D) $(BIN_D) $(IMAGE_FILE)
 

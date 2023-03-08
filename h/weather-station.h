@@ -25,10 +25,18 @@
 /* Object identifiers
 */
 extern dv_id_t Init, Led, Gather, Command;		/* Tasks */
+extern dv_id_t tusb_DeviceTask;
+
 extern dv_id_t Itty1, Itty2, Timer;				/* ISRs */
+extern dv_id_t tusb_Isr1, tusb_Isr2, tusb_Isr3;
+
 extern dv_id_t Ticker;							/* Counters */
+
 extern dv_id_t LedAlarm;						/* Alarms */
+extern dv_id_t tusb_DeviceAlarm;
+
 extern dv_id_t SpiMutex, TtyMutex;				/* Mutexes */
+extern dv_id_t tusb_Mutex;
 
 /* Events for the Gather and Command tasks
 */
@@ -41,14 +49,19 @@ extern void main_Init(void);
 extern void main_Led(void);
 extern void main_Gather(void);
 extern void main_Command(void);
+extern void main_tusb_DeviceTask(void);
 
 extern void main_Itty1(void);
 extern void main_Itty2(void);
 extern void main_Timer(void);
+extern void main_tusb_Isr1(void);
+extern void main_tusb_Isr2(void);
+extern void main_tusb_Isr3(void);
 
 /* Callouts
 */
 extern dv_u64_t af_LedAlarm(dv_id_t unused_a, dv_param_t unused_d);
+extern dv_u64_t tusb_Expiry(dv_id_t a, dv_param_t p);
 
 /* tty1 functions
 */

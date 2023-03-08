@@ -93,25 +93,15 @@
 
 extern void init_millisecond_ticker(void);
 
-#define USE_USB	0	/* USB stuff not needed (yet) */
+#define USE_USB	1
 
 #if USE_USB
 
-#define hw_UsbInterruptId1		dv_irq_usb_lp_can_rx0
-#define hw_UsbInterruptId2		dv_irq_usb_hp_can_tx
-#define hw_UsbInterruptId3		dv_irq_usbwakeup
-
-/* ISR bodies defined as macros to avoid having to include tinyusb header here.
-*/
-#define hw_UsbIsr1()	tud_int_handler(0)
-#define hw_UsbIsr2()	tud_int_handler(0)
-#define hw_UsbIsr3()	tud_int_handler(0)
-
-#define	hw_EnableUsbIrqs() \
+#define	EnableUsbIrqs() \
 	do {									\
-		dv_enable_irq(hw_UsbInterruptId1);	\
-		dv_enable_irq(hw_UsbInterruptId2);	\
-		dv_enable_irq(hw_UsbInterruptId3);	\
+		dv_enable_irq(dv_irq_usb_lp_can_rx0);	\
+		dv_enable_irq(dv_irq_usb_hp_can_tx);	\
+		dv_enable_irq(dv_irq_usbwakeup);	\
 	} while (0)
 
 #endif
