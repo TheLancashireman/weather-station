@@ -27,6 +27,8 @@
 #include <weather-station.h>
 
 #include <dv-stm32-spi.h>
+#include <dv-tusb-device.h>
+
 
 /* Object identifiers
 */
@@ -57,10 +59,7 @@ void main_Init(void)
 	*/
 	tty1_init();
 
-#if USE_USB
-	tusb_init();
-	dv_activatetask(tusb_DeviceTask);
-#endif
+	callout_tusbd_activate();
 }
 
 /* main_Timer() - body of ISR to handle interval timer interrupt
@@ -85,7 +84,7 @@ void callout_addtasks(dv_id_t mode)
 	Gather  = dv_addextendedtask("Gather",  &main_Gather,  2, 512);
 	Command = dv_addextendedtask("Command", &main_Command, 1, 512);
 
-	tusb_DeviceTask = dv_addextendedtask("tusb_DeviceTask", &main_tusb_DeviceTask, 3, 1024);
+	callout_tusbd_addtasks();
 }
 
 /* callout_addisrs() - configure the isrs
@@ -96,9 +95,7 @@ void callout_addisrs(dv_id_t mode)
 	Itty2 = dv_addisr("Itty2",  &main_Itty2,  dv_irq_usart2, 5);
 	Timer = dv_addisr("Timer",  &main_Timer,  dv_irq_tim2,   6);
 
-	tusb_Isr1 = dv_addisr("tusb_Isr1", &main_tusb_Isr1, dv_irq_usb_lp_can_rx0, 8);
-	tusb_Isr2 = dv_addisr("tusb_Isr2", &main_tusb_Isr2, dv_irq_usb_hp_can_tx, 8);
-    tusb_Isr3 = dv_addisr("tusb_Isr3", &main_tusb_Isr3, dv_irq_usbwakeup, 8);
+	callout_tusbd_addisrs();
 }
 
 /* callout_addgroups() - configure the executable groups
@@ -121,11 +118,7 @@ void callout_addmutexes(dv_id_t mode)
 	dv_addmutexuser(TtyMutex, Gather);
 	dv_addmutexuser(TtyMutex, Command);
 
-	tusb_Mutex = dv_addmutex("tusb_Mutex", 1);
-	dv_addmutexuser(tusb_Mutex, tusb_DeviceTask);
-	dv_addmutexuser(tusb_Mutex, tusb_Isr1);
-	dv_addmutexuser(tusb_Mutex, tusb_Isr2);
-	dv_addmutexuser(tusb_Mutex, tusb_Isr3);
+	callout_tusbd_addmutexes();
 }
 
 /* callout_addcounters() - configure the counters
@@ -140,7 +133,8 @@ void callout_addcounters(dv_id_t mode)
 void callout_addalarms(dv_id_t mode)
 {
 	LedAlarm = dv_addalarm("LedAlarm", &af_LedAlarm, 0);
-	tusb_DeviceAlarm = dv_addalarm("tusb_DeviceAlarm", &tusb_Expiry, (dv_param_t)tusb_DeviceTask);
+
+	callout_tusbd_addalarms();
 }
 
 /* callout_autostart() - start the objects that need to be running after dv_startos()
@@ -161,7 +155,9 @@ void callout_autostart(dv_id_t mode)
 	*/
 	tty2_init();
 
-	EnableUsbIrqs();
+	/* Enable USB interrupts
+	*/
+	dv_tusbd_enableirqs();
 }
 
 /* callout_reporterror() - called if an error is detected

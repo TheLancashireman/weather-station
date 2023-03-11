@@ -94,6 +94,7 @@ LD_OBJS		+= $(OBJ_D)/sensor.o
 LD_OBJS		+= $(OBJ_D)/hoperf-rfm64.o
 LD_OBJS		+= $(OBJ_D)/tty1.o
 LD_OBJS		+= $(OBJ_D)/tty2.o
+LD_OBJS		+= $(OBJ_D)/usb-descriptors.o
 LD_OBJS		+= $(OBJ_D)/ws-usb.o
 LD_OBJS		+= $(OBJ_D)/ws-blue-pill.o
 
@@ -104,6 +105,7 @@ LD_OBJS		+= $(OBJ_D)/davroska-extended.o
 LD_OBJS		+= $(OBJ_D)/dv-printf.o
 LD_OBJS		+= $(OBJ_D)/dv-xprintf.o
 LD_OBJS		+= $(OBJ_D)/dv-memset32.o
+LD_OBJS  	+= $(OBJ_D)/dv-tusb-device.o
 
 VPATH 		+= c
 VPATH 		+= s
