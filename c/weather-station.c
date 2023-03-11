@@ -59,6 +59,7 @@ void main_Init(void)
 
 #if USE_USB
 	tusb_init();
+	dv_activatetask(tusb_DeviceTask);
 #endif
 }
 

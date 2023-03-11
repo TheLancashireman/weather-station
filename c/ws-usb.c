@@ -26,6 +26,7 @@
 #include <ws-blue-pill.h>
 #include <weather-station.h>
 #include <tusb.h>
+#include <dv-stdio.h>
 
 dv_id_t tusb_Mutex;
 dv_id_t tusb_DeviceTask;
@@ -37,10 +38,13 @@ dv_id_t tusb_Isr3;
 
 void main_tusb_DeviceTask(void)
 {
+	dv_printf("main_tusb_DeviceTask() reached\n");
 	for (;;)
 	{
 		tud_task();
+//		dv_printf("x");
 		osal_delay(0, 5);	/* Might happen during startup. Avoids busy-wait. */
+//		dv_printf("y\n");
 	}
 }
 
@@ -273,10 +277,10 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 char const* string_desc_arr [] =
 {
 	(const char[]) { 0x09, 0x04 },	// 0: is supported language is English (0x0409)
-  	"TinyUSB",						// 1: Manufacturer
-	"TinyUSB Device",				// 2: Product
+  	"Dave",							// 1: Manufacturer
+	"WeatherStation",				// 2: Product
 	"123456",						// 3: Serials, should use chip ID
-	"TinyUSB CDC",					// 4: CDC Interface
+	"DaveWS_CDC",					// 4: CDC Interface
 };
 
 static uint16_t _desc_str[32];
