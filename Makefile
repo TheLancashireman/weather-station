@@ -123,6 +123,7 @@ LD_OBJS		+= $(OBJ_D)/dv-stm32-gpio.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-uart.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-spi.o
 LD_OBJS		+= $(OBJ_D)/dv-stm32-timx.o
+LD_OBJS		+= $(OBJ_D)/dv-stm32-usb.o
 
 LD_LIB		+= -ltusb
 
