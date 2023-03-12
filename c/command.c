@@ -28,10 +28,10 @@
 
 #define MAXCOMMAND	15
 
-static void process_command(char *cmd);
+extern void process_command(const dv_uartdriver_t *f, char *cmd);
 static void read_rfm_config(void);
 
-/* main_Command() - main function for the data gathering task
+/* main_Command() - main function for the command task
 */
 void main_Command(void)
 {
@@ -69,7 +69,7 @@ void main_Command(void)
 				if ( ( c == '\r') || ( c == '\n' ) )
 				{
 					cmdbuf[n] = '\0';
-					process_command(cmdbuf);
+					process_command(&dv_consoledriver, cmdbuf);
 					break;
 				}
 				else
@@ -85,18 +85,18 @@ void main_Command(void)
 
 /* process_command() - interpret and act on an incoming command
 */
-static void process_command(char *cmd)
+void process_command(const dv_uartdriver_t *f, char *cmd)
 {
-	dv_printf("%s :\n", cmd);
+	dv_fprintf(f, "%s :\n", cmd);
 
 	if ( dv_strcmp(cmd, "log") == 0 )
 	{
-		dv_printf("logging enabled\n");
+		dv_fprintf(f, "logging enabled\n");
 		logging = 1;
 	}
 	else if ( dv_strcmp(cmd, "nolog") == 0 )
 	{
-		dv_printf("logging disabled\n");
+		dv_fprintf(f, "logging disabled\n");
 		logging = 0;
 	}
 	else if ( dv_strcmp(cmd, "dump") == 0 )
@@ -111,11 +111,11 @@ static void process_command(char *cmd)
 	{
 		extern int rfm64_debug;
 		rfm64_debug = !rfm64_debug;
-		dv_printf("rfm64 debug %sabled\n", rfm64_debug ? "en" : "dis");
+		dv_fprintf(f, "rfm64 debug %sabled\n", rfm64_debug ? "en" : "dis");
 	}
 	else
 	{
-		dv_printf("wot?\n");
+		dv_fprintf(f, "wot?\n");
 	}
 }
 

@@ -33,6 +33,7 @@
 /* Object identifiers
 */
 dv_id_t Init, Led, Gather, Command;			/* Tasks */
+dv_id_t Cdc0Rx;								/* Tasks */
 dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 dv_id_t Ticker;								/* Counters */
 dv_id_t LedAlarm;							/* Alarms */
@@ -80,6 +81,7 @@ void callout_addtasks(dv_id_t mode)
 {
 	Init = dv_addtask("Init", &main_Init, 4, 1);
 	Led  = dv_addtask("Led",  &main_Led,  3, 1);
+	Cdc0Rx = dv_addtask("Cdc0Rx", &main_Cdc0Rx, 1, 2);
 
 	Gather  = dv_addextendedtask("Gather",  &main_Gather,  2, 512);
 	Command = dv_addextendedtask("Command", &main_Command, 1, 512);

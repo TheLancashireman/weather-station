@@ -25,6 +25,7 @@
 /* Object identifiers
 */
 extern dv_id_t Init, Led, Gather, Command;		/* Tasks */
+extern dv_id_t Cdc0Rx;							/* Tasks */
 extern dv_id_t Itty1, Itty2, Timer;				/* ISRs */
 extern dv_id_t Ticker;							/* Counters */
 extern dv_id_t LedAlarm;						/* Alarms */
@@ -41,6 +42,7 @@ extern void main_Init(void);
 extern void main_Led(void);
 extern void main_Gather(void);
 extern void main_Command(void);
+extern void main_Cdc0Rx(void);
 
 extern void main_Itty1(void);
 extern void main_Itty2(void);
@@ -73,6 +75,10 @@ extern dv_boolean_t tty2_isrx(void);
 extern dv_boolean_t tty2_istx(void);
 extern dv_boolean_t tty2_putc(int c);
 extern int tty2_getc(void);
+
+/* Command interpretation
+*/
+extern void process_command(const dv_uartdriver_t *f, char *cmd);
 
 /* SPI configuration
 */
