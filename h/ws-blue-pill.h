@@ -29,8 +29,8 @@
  *                         PA8 |         | NRST
  *        TX1              PA9 |         | PB10
  *        RX1             PA10 |         | PB1
- *                        PA11 |         | PB0
- *                        PA12 |         | PA7   MOSI
+ *        USB-            PA11 |         | PB0
+ *        USB+            PA12 |         | PA7   MOSI
  *                        PA15 |         | PA6   MISO
  *                         PB3 |         | PA5   SCK
  *                         PB4 |         | PA4   NSS_CONFIG  (RFM64)
@@ -92,18 +92,5 @@
 #define RFM64_POR_PIN			0
 
 extern void init_millisecond_ticker(void);
-
-#define USE_USB	1
-
-#if USE_USB
-
-#define	EnableUsbIrqs() \
-	do {									\
-		dv_enable_irq(dv_irq_usb_lp_can_rx0);	\
-		dv_enable_irq(dv_irq_usb_hp_can_tx);	\
-		dv_enable_irq(dv_irq_usbwakeup);	\
-	} while (0)
-
-#endif
 
 #endif
