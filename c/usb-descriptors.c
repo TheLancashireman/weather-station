@@ -32,6 +32,11 @@
 #define USB_PID   0x1001
 #define USB_BCD   0x0200
 
+#define STR_MANUF	"Dave"
+#define STR_PRODUCT	"WeatherStation"
+#define STR_SERIAL	"WS0001"
+#define STR_CDC		"WS USB"
+
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
@@ -211,10 +216,10 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 char const* string_desc_arr [] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-  "TinyUSB",                     // 1: Manufacturer
-  "TinyUSB Device",              // 2: Product
-  "123456",                      // 3: Serials, should use chip ID
-  "TinyUSB CDC",                 // 4: CDC Interface
+  STR_MANUF,	// 1: Manufacturer
+  STR_PRODUCT,	// 2: Product
+  STR_SERIAL,	// 3: Serials, should use chip ID
+  STR_CDC,		// 4: CDC Interface
 };
 
 static uint16_t _desc_str[32];
