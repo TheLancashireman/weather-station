@@ -38,7 +38,7 @@
 #define OSAL_OPT_DEVICE		1
 #define TUSB_COUNTERID		Ticker
 
-#define OSAL_DEBUG	1
+#define OSAL_DEBUG			0
 
 /* DV_CFG_MAXEXE is the maximum number of executables (tasks + ISRs) that you can create.
 */
