@@ -27,4 +27,18 @@
 #include <weather-station.h>
 #include <tusb.h>
 #include <dv-stdio.h>
+#include <tusb.h>
+
+/* Debuggable versions of queue send/receive
+*/
+#if OSAL_DEBUG
+bool extern_queue_receive(osal_queue_t qhdl, void* data)
+{
+    return inline_queue_receive(qhdl, data);
+}
+bool extern_queue_send(osal_queue_t qhdl, void const * data, bool in_isr)
+{
+    return inline_queue_send(qhdl, data, in_isr);
+}
+#endif
 
