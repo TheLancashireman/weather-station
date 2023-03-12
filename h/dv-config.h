@@ -27,7 +27,18 @@
 
 #define DV_TARGET			<arm/h/dv-target-blue-pill.h>
 
+#define CFG_TUSB_MCU		OPT_MCU_STM32F1
+
+#define CFG_TUSB_OS			OPT_OS_CUSTOM
 #define DV_TUSB_OS_HDR		<tusb_os_davroska.h>
+
+#define DV_TUSB_HOST		0
+#define DV_TUSB_DEVICE		1
+#define OSAL_OPT_HOST		0
+#define OSAL_OPT_DEVICE		1
+#define TUSB_COUNTERID		Ticker
+
+#define OSAL_DEBUG	1
 
 /* DV_CFG_MAXEXE is the maximum number of executables (tasks + ISRs) that you can create.
 */
