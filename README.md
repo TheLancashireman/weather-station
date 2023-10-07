@@ -1,3 +1,10 @@
+# IMPORTANT: this project is obsolete
+
+After a lot of trouble with the USB device on the STM32, I decided to implement the data logger in micropython
+on a Raspberry Pico instead. Using a Pico-W has the advantage of a built-in internet connection too.
+
+The repository remains here for future reference.
+
 # Weather station
 
 This is the firmware for a weather station. The design uses various remote sensors communicating

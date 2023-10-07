@@ -106,7 +106,18 @@ void tud_cdc_rx_cb(dv_u8_t itf)
 */
 dv_boolean_t cdc0_putc(int c)
 {
+	int n;
+	for (;;)
+	{
+		n = tud_cdc_n_write_available(0);
+		if ( n == 0 )
+			tud_cdc_n_write_flush(0);
+		else
+			break;
+	}
 	tud_cdc_n_write(0, &c, 1);
+	if ( c == '\n' )
+		tud_cdc_n_write_flush(0);
 	return 1;
 }
 

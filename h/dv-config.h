@@ -37,6 +37,7 @@
 #define OSAL_OPT_HOST		0
 #define OSAL_OPT_DEVICE		1
 #define TUSB_COUNTERID		Ticker
+#define DV_TUSB_TASKPRIO	5
 
 #define OSAL_DEBUG			0
 

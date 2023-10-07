@@ -43,6 +43,9 @@ dv_id_t SpiMutex, TtyMutex;					/* Mutexes */
 */
 dv_boolean_t logging;
 
+// TEMPORARY
+unsigned DBG_var;
+
 /* main_Init() - start the ball rolling
 */
 void main_Init(void)
@@ -93,9 +96,9 @@ void callout_addtasks(dv_id_t mode)
 */
 void callout_addisrs(dv_id_t mode)
 {
-	Itty1 = dv_addisr("Itty1",  &main_Itty1,  dv_irq_usart1, 5);
-	Itty2 = dv_addisr("Itty2",  &main_Itty2,  dv_irq_usart2, 5);
-	Timer = dv_addisr("Timer",  &main_Timer,  dv_irq_tim2,   6);
+	Itty1 = dv_addisr("Itty1",  &main_Itty1,  dv_irq_usart1, 6);
+	Itty2 = dv_addisr("Itty2",  &main_Itty2,  dv_irq_usart2, 6);
+	Timer = dv_addisr("Timer",  &main_Timer,  dv_irq_tim2,   7);
 
 	callout_tusbd_addisrs();
 }

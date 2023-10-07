@@ -20,16 +20,17 @@
 #define DV_ASM	0
 #include <dv-config.h>
 #include <weather-station.h>
+#include <ws-blue-pill.h>
 #include <sensor.h>
 #include <convert.h>
 #include <dv-string.h>
-#include <dv-string.h>
 #include <hoperf-rfm64.h>
+#include <davroska.h>
 
 #define MAXCOMMAND	15
 
 extern void process_command(const dv_uartdriver_t *f, char *cmd);
-static void read_rfm_config(void);
+static void read_rfm_config(const dv_uartdriver_t *f);
 
 /* main_Command() - main function for the command task
 */
@@ -105,7 +106,7 @@ void process_command(const dv_uartdriver_t *f, char *cmd)
 	}
 	else if ( dv_strcmp(cmd, "r") == 0 )
 	{
-		read_rfm_config();
+		read_rfm_config(f);
 	}
 	else if ( dv_strcmp(cmd, "D") == 0 )
 	{
@@ -121,23 +122,31 @@ void process_command(const dv_uartdriver_t *f, char *cmd)
 
 /* TEMPORARY
 */
-static void read_rfm_config(void)
+static void read_rfm_config(const dv_uartdriver_t *f)
 {
 	dv_boolean_t save_lg = logging;
 	logging = 0;
 
-	dv_printf("reading RFM64 configuration\n");
+	dv_fprintf(f, "reading RFM64 configuration\n");
+
+	dv_disable_irq(dv_irq_usart1);
+	dv_disable_irq(dv_irq_usart2);
 
 	for ( dv_u8_t i = 0; i < 32; i++ )
 	{
 		dv_u8_t rval;
 		int e = rfm64_read_cfgr(i, &rval);
+		dv_disable_irq(dv_irq_tim2);
 		if ( e == 0 )
-			dv_printf("rfm64 register %02d = 0x%02x\n", i, rval);
+			dv_fprintf(f, "rfm64 register %02d = 0x%02x\n", i, rval);
 		else
-			dv_printf("rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
+			dv_fprintf(f, "rfm64_read_cfgr(&d, ...) returned %d\n", i, e);
+		dv_enable_irq(dv_irq_tim2);
 	}
-	tty1_flush();
+	tty1_flush(); /* Oops! */
+
+	dv_enable_irq(dv_irq_usart1);
+	dv_enable_irq(dv_irq_usart2);
 
 	logging = save_lg;
 }
